@@ -6,14 +6,14 @@
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  * <p/>
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  * <p/>
- * You should have received a copy of the GNU General Public License
- * along with this software. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this software. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.jitlogic.zorka.core;
 
 import com.jitlogic.zorka.common.ZorkaService;
@@ -33,6 +33,9 @@ import com.jitlogic.zorka.core.perfmon.PerfMonLib;
 import com.jitlogic.zorka.core.spy.*;
 import com.jitlogic.zorka.common.tracedata.SymbolRegistry;
 import com.jitlogic.zorka.core.integ.*;
+import com.jitlogic.zorka.core.integ.elasticsearch.ElasticSearchAgent;
+import com.jitlogic.zorka.core.integ.tcp.TcpAgent;
+import com.jitlogic.zorka.core.integ.zabbix.ZabbixActiveAgentFixed;
 import com.jitlogic.zorka.core.mbeans.MBeanServerRegistry;
 import com.jitlogic.zorka.core.normproc.NormLib;
 import com.jitlogic.zorka.core.util.DaemonThreadFactory;
@@ -42,10 +45,11 @@ import java.util.Set;
 import java.util.concurrent.*;
 
 /**
- * This method binds together all components to create fuunctional Zorka agent. It is responsible for
- * initializing all subsystems (according to property values in zorka configuration file) and starting
- * all service threads if necessary. It retains references to created components and maintains reference
- * to MBean server registry and its own instance singletons.
+ * This method binds together all components to create fuunctional Zorka agent.
+ * It is responsible for initializing all subsystems (according to property
+ * values in zorka configuration file) and starting all service threads if
+ * necessary. It retains references to created components and maintains
+ * reference to MBean server registry and its own instance singletons.
  *
  * @author rafal.lewczuk@jitlogic.com
  */
@@ -75,44 +79,61 @@ public class AgentInstance implements ZorkaService {
      * Handles scheduled tasks
      */
     private ScheduledExecutorService scheduledExecutor;
-    
+
     /**
      * Main zorka agent object - one that executes actual requests
      */
     private ZorkaBshAgent zorkaAgent;
 
     /**
-     * Reference to zabbix active agent object - one that handles zabbix active requests and passes them to BSH agent
+     * Reference to zabbix active agent object - one that handles zabbix active
+     * requests and passes them to BSH agent
      */
     private ZabbixActiveAgent zabbixActiveAgent;
-    
+
     /**
-     * Reference to zabbix agent object - one that handles zabbix requests and passes them to BSH agent
+     * Reference to zabbix agent object - one that handles zabbix requests and
+     * passes them to BSH agent
      */
     private ZabbixAgent zabbixAgent;
 
     /**
-     * Reference to zorka library - basic agent functions available to zorka scripts as 'zorka.*'
+     * Reference to elasticsearch agent object
+     */
+    private ElasticSearchAgent elasticSearchAgent;
+
+    /**
+     * Reference to generic tcp agent object
+     */
+    private TcpAgent tcpAgent;
+
+    /**
+     * Reference to zorka library - basic agent functions available to zorka
+     * scripts as 'zorka.*'
      */
     private ZorkaLib zorkaLib;
 
     /**
-     * Reference to zabbix library - available to zorka scripts as 'zabbix.*' functions
+     * Reference to zabbix library - available to zorka scripts as 'zabbix.*'
+     * functions
      */
     private ZabbixLib zabbixLib;
 
     /**
-     * Reference to nagios agents - one that handles nagios NRPE requests and passes them to BSH agent
+     * Reference to nagios agents - one that handles nagios NRPE requests and
+     * passes them to BSH agent
      */
     private NagiosAgent nagiosAgent;
 
     /**
-     * Reference to nagios library - available to zorka scripts as 'nagios.*' functions
+     * Reference to nagios library - available to zorka scripts as 'nagios.*'
+     * functions
      */
     private NagiosLib nagiosLib;
 
     /**
-     * Reference to spy library - available to zorka scripts as 'spy.*' functions
+     * Reference to spy library - available to zorka scripts as 'spy.*'
+     * functions
      */
     private SpyLib spyLib;
 
@@ -122,19 +143,22 @@ public class AgentInstance implements ZorkaService {
     private TracerLib tracerLib;
 
     /**
-     * Reference to syslog library - available to zorka scripts as 'syslog.*' functions
+     * Reference to syslog library - available to zorka scripts as 'syslog.*'
+     * functions
      */
     private SyslogLib syslogLib;
 
     private UtilLib utilLib;
 
     /**
-     * Reference to SNMP library - available to zorka scripts as 'snmp.*' functions
+     * Reference to SNMP library - available to zorka scripts as 'snmp.*'
+     * functions
      */
     private SnmpLib snmpLib;
 
     /**
-     * Reference to normalizers library - available to zorka scripts as 'normalizers.*' function
+     * Reference to normalizers library - available to zorka scripts as
+     * 'normalizers.*' function
      */
     private NormLib normLib;
 
@@ -168,7 +192,6 @@ public class AgentInstance implements ZorkaService {
         this.retransformer = retransformer;
     }
 
-
     /**
      * Starts agent. Real startup sequence is performed here.
      */
@@ -185,7 +208,6 @@ public class AgentInstance implements ZorkaService {
         }
     }
 
-
     private void initBshLibs() {
 
         getZorkaAgent().put("zorka", getZorkaLib());
@@ -201,11 +223,11 @@ public class AgentInstance implements ZorkaService {
         getZorkaAgent().put("perfmon", getPerfMonLib());
 
         if (config.boolCfg("zabbix.active", false)) {
-        	log.info(ZorkaLogger.ZAG_CONFIG, "Enabling ZABBIX Active Agent subsystem ...");
-        	getZabbixActiveAgent().start();
+            log.info(ZorkaLogger.ZAG_CONFIG, "Enabling ZABBIX Active Agent subsystem ...");
+            getZabbixActiveAgent().start();
             zorkaAgent.put("zabbix.active", getZabbixLib());
         }
-        
+
         if (config.boolCfg("zabbix", true)) {
             log.info(ZorkaLogger.ZAG_CONFIG, "Enabling ZABBIX subsystem ...");
             getZabbixAgent().start();
@@ -228,10 +250,19 @@ public class AgentInstance implements ZorkaService {
             zorkaAgent.put("nagios", getNagiosLib());
         }
 
+        if (config.boolCfg("elasticsearch", false)) {
+            log.info(ZorkaLogger.ZAG_CONFIG, "Enabling Elastic Search Agent subsystem ...");
+            getElasticSearchAgent().start();
+        }
+
+        if (config.boolCfg("tcp", false)) {
+            log.info(ZorkaLogger.ZAG_CONFIG, "Enabling TCP Generic Agent subsystem ...");
+            getTcpAgent().start();
+        }
+
         getZorkaAgent().put("normalizers", getNormLib());
 
     }
-
 
     public void createZorkaDiagMBean() {
         String mbeanName = props.getProperty("zorka.diagnostics.mbean").trim();
@@ -241,16 +272,15 @@ public class AgentInstance implements ZorkaService {
         registry.getOrRegister("java", mbeanName, "Version",
                 config.stringCfg("zorka.version", "unknown"), "Agent Diagnostics");
 
-
         for (int i = 0; i < AgentDiagnostics.numCounters(); i++) {
             final int counter = i;
             registry.getOrRegister("java", mbeanName, AgentDiagnostics.getName(counter),
                     new ValGetter() {
-                        @Override
-                        public Object get() {
-                            return AgentDiagnostics.get(counter);
-                        }
-                    });
+                @Override
+                public Object get() {
+                    return AgentDiagnostics.get(counter);
+                }
+            });
 
         }
 
@@ -260,11 +290,9 @@ public class AgentInstance implements ZorkaService {
         registry.getOrRegister("java", mbeanName, "stats", stats);
     }
 
-
     public AgentConfig getConfig() {
         return config;
     }
-
 
     public synchronized QueryTranslator getTranslator() {
         if (translator == null) {
@@ -272,7 +300,6 @@ public class AgentInstance implements ZorkaService {
         }
         return translator;
     }
-
 
     private SpyMatcherSet tracerMatcherSet;
 
@@ -283,7 +310,6 @@ public class AgentInstance implements ZorkaService {
         return tracerMatcherSet;
     }
 
-
     private MetricsRegistry metricsRegistry;
 
     public synchronized MetricsRegistry getMetricsRegistry() {
@@ -292,7 +318,6 @@ public class AgentInstance implements ZorkaService {
         }
         return metricsRegistry;
     }
-
 
     private SymbolRegistry symbolRegistry;
 
@@ -303,7 +328,6 @@ public class AgentInstance implements ZorkaService {
         return symbolRegistry;
     }
 
-
     private synchronized Executor getConnExecutor() {
         if (connExecutor == null) {
             int rt = config.intCfg("zorka.req.threads", 8);
@@ -313,7 +337,6 @@ public class AgentInstance implements ZorkaService {
         }
         return connExecutor;
     }
-
 
     private synchronized ExecutorService getMainExecutor() {
         if (mainExecutor == null) {
@@ -341,16 +364,14 @@ public class AgentInstance implements ZorkaService {
         return tracer;
     }
 
-
     public synchronized SpyRetransformer getRetransformer() {
         return retransformer;
     }
 
-
     public synchronized SpyClassTransformer getClassTransformer() {
         if (classTransformer == null) {
             classTransformer = new SpyClassTransformer(getSymbolRegistry(), getTracer(),
-                getConfig().boolCfg("zorka.spy.compute.frames", true), stats, getRetransformer());
+                    getConfig().boolCfg("zorka.spy.compute.frames", true), stats, getRetransformer());
         }
         return classTransformer;
     }
@@ -375,7 +396,6 @@ public class AgentInstance implements ZorkaService {
         return zorkaAgent;
     }
 
-
     public synchronized NagiosAgent getNagiosAgent() {
         if (nagiosAgent == null) {
             nagiosAgent = new NagiosAgent(config, getZorkaAgent(), getTranslator());
@@ -385,7 +405,9 @@ public class AgentInstance implements ZorkaService {
 
     public synchronized ZabbixActiveAgent getZabbixActiveAgent() {
         if (zabbixActiveAgent == null) {
-            zabbixActiveAgent = new ZabbixActiveAgent(config, getZorkaAgent(), getTranslator(), getScheduledExecutor());
+            zabbixActiveAgent = config.boolCfg("zabbix.active.fixed", false)
+                    ? new ZabbixActiveAgentFixed(config, getZorkaAgent(), getTranslator(), getScheduledExecutor())
+                    : new ZabbixActiveAgent(config, getZorkaAgent(), getTranslator(), getScheduledExecutor());
         }
         return zabbixActiveAgent;
     }
@@ -397,6 +419,19 @@ public class AgentInstance implements ZorkaService {
         return zabbixAgent;
     }
 
+    public synchronized ElasticSearchAgent getElasticSearchAgent() {
+        if (elasticSearchAgent == null) {
+            elasticSearchAgent = new ElasticSearchAgent(config, getZorkaAgent(), getTranslator(), getScheduledExecutor());
+        }
+        return elasticSearchAgent;
+    }
+
+    public synchronized TcpAgent getTcpAgent() {
+        if (tcpAgent == null) {
+            tcpAgent = new TcpAgent(config, getZorkaAgent(), getTranslator(), getScheduledExecutor());
+        }
+        return tcpAgent;
+    }
 
     public synchronized ZorkaLib getZorkaLib() {
         if (zorkaLib == null) {
@@ -405,7 +440,6 @@ public class AgentInstance implements ZorkaService {
         return zorkaLib;
     }
 
-
     public synchronized ZabbixLib getZabbixLib() {
         if (zabbixLib == null) {
             zabbixLib = new ZabbixLib(getMBeanServerRegistry(), config);
@@ -413,14 +447,12 @@ public class AgentInstance implements ZorkaService {
         return zabbixLib;
     }
 
-
     public synchronized UtilLib getUtilLib() {
         if (utilLib == null) {
             utilLib = new UtilLib();
         }
         return utilLib;
     }
-
 
     /**
      * Returns reference to syslog library.
@@ -436,7 +468,6 @@ public class AgentInstance implements ZorkaService {
         return syslogLib;
     }
 
-
     /**
      * Returns reference to Spy library
      *
@@ -450,7 +481,6 @@ public class AgentInstance implements ZorkaService {
 
         return spyLib;
     }
-
 
     /**
      * Returns reference to tracer library.
@@ -466,7 +496,6 @@ public class AgentInstance implements ZorkaService {
         return tracerLib;
     }
 
-
     public synchronized NagiosLib getNagiosLib() {
 
         if (nagiosLib == null) {
@@ -476,7 +505,6 @@ public class AgentInstance implements ZorkaService {
         return nagiosLib;
     }
 
-
     public synchronized NormLib getNormLib() {
 
         if (normLib == null) {
@@ -485,7 +513,6 @@ public class AgentInstance implements ZorkaService {
 
         return normLib;
     }
-
 
     /**
      * Returns reference to SNMP library
@@ -501,7 +528,6 @@ public class AgentInstance implements ZorkaService {
         return snmpLib;
     }
 
-
     /**
      * Returns reference to rank processing & metrics library
      *
@@ -516,7 +542,6 @@ public class AgentInstance implements ZorkaService {
         return perfMonLib;
     }
 
-
     /**
      * Returns reference to mbean server registry.
      *
@@ -530,7 +555,6 @@ public class AgentInstance implements ZorkaService {
 
         return mBeanServerRegistry;
     }
-
 
     @Override
     public void shutdown() {
@@ -559,16 +583,23 @@ public class AgentInstance implements ZorkaService {
         if (zabbixAgent != null) {
             zabbixAgent.shutdown();
         }
-        
+
         if (zabbixActiveAgent != null) {
-        	zabbixActiveAgent.shutdown();
+            zabbixActiveAgent.shutdown();
         }
 
         if (nagiosAgent != null) {
             nagiosAgent.shutdown();
         }
-    }
 
+        if (elasticSearchAgent != null) {
+            elasticSearchAgent.shutdown();
+        }
+
+        if (tcpAgent != null) {
+            tcpAgent.shutdown();
+        }
+    }
 
     public void restart() {
         log.info(ZorkaLogger.ZAG_CONFIG, "Reloading agent configuration...");
@@ -584,9 +615,17 @@ public class AgentInstance implements ZorkaService {
         if (config.boolCfg("zabbix.active", false)) {
             getZabbixActiveAgent().restart();
         }
-        
-        if (config.boolCfg("nagios", true)) {
+
+        if (config.boolCfg("nagios", false)) {
             getNagiosAgent().restart();
+        }
+
+        if (config.boolCfg("elasticsearch", false)) {
+            getElasticSearchAgent().restart();
+        }
+
+        if (config.boolCfg("tcp", false)) {
+            getTcpAgent().restart();
         }
 
         getZorkaAgent().restart();
@@ -596,7 +635,6 @@ public class AgentInstance implements ZorkaService {
         log.info(ZorkaLogger.ZAG_CONFIG, "Agent configuration scripts executed (" + l + " errors).");
         log.info(ZorkaLogger.ZAG_CONFIG, "Number of matchers in tracer configuration: "
                 + tracer.getMatcherSet().getMatchers().size());
-
 
     }
 

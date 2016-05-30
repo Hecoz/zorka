@@ -48,51 +48,51 @@ import com.jitlogic.zorka.core.ZorkaBshAgent;
 public class ZabbixActiveAgent implements Runnable, ZorkaService {
 
 	/* Logger */
-	private final ZorkaLog log = ZorkaLogger.getLog(ZabbixActiveAgent.class);
+	protected final ZorkaLog log = ZorkaLogger.getLog(ZabbixActiveAgent.class);
 
 
 	/* Thread */
-	private Thread thread;
-	private volatile boolean running;
+	protected Thread thread;
+	protected volatile boolean running;
 
 
 	/* Agent Settings */
-	private String prefix;
-	private ZorkaConfig config;
+	protected String prefix;
+	protected ZorkaConfig config;
 
     /** Hostname agent advertises itself to zabbix. */
-	private String agentHost;
-	private String activeIpPort;
+	protected String agentHost;
+	protected String activeIpPort;
 
     /** Interval between fetching new item list from Zabbix. */
-	private long activeCheckInterval;
+	protected long activeCheckInterval;
 
     /** Interval between sender cycles */
-	private long senderInterval;
+	protected long senderInterval;
 
 
-	private int maxBatchSize;
+	protected int maxBatchSize;
 
 
-	private int maxCacheSize;
+	protected int maxCacheSize;
 
 
 	/* Connection Settings */
-	private InetAddress activeAddr;
-	private String defaultAddr;
-	private int activePort;
-	private int defaultPort;
-	private Socket socket;
+	protected InetAddress activeAddr;
+	protected String defaultAddr;
+	protected int activePort;
+	protected int defaultPort;
+	protected Socket socket;
 
 
 	/* Scheduler Management */
-	private ScheduledExecutorService scheduler;
-	private HashMap<ActiveCheckQueryItem, ScheduledFuture<?>> runningTasks;
-	private ConcurrentLinkedQueue<ActiveCheckResult> resultsQueue;
-	private ScheduledFuture<?> senderTask;
+	protected ScheduledExecutorService scheduler;
+	protected HashMap<ActiveCheckQueryItem, ScheduledFuture<?>> runningTasks;
+	protected ConcurrentLinkedQueue<ActiveCheckResult> resultsQueue;
+	protected ScheduledFuture<?> senderTask;
 
 	/* BSH agent */
-	private ZorkaBshAgent agent;
+	protected ZorkaBshAgent agent;
 
 	/* Query translator */
 	protected QueryTranslator translator;
@@ -304,7 +304,7 @@ public class ZabbixActiveAgent implements Runnable, ZorkaService {
 		}
 	}
 
-	private void scheduleTasks(ActiveCheckResponse checkData) {
+	protected void scheduleTasks(ActiveCheckResponse checkData) {
 		ArrayList<ActiveCheckQueryItem> newTasks = new ArrayList<ActiveCheckQueryItem>(checkData.getData());
 		ArrayList<ActiveCheckQueryItem> tasksToInsert = new ArrayList<ActiveCheckQueryItem>(checkData.getData());
 		ArrayList<ActiveCheckQueryItem> tasksToDelete = new ArrayList<ActiveCheckQueryItem>(runningTasks.keySet());
@@ -335,7 +335,7 @@ public class ZabbixActiveAgent implements Runnable, ZorkaService {
 		
 	}
 
-	private void scheduleTasks() {
+	protected void scheduleTasks() {
 		ZabbixActiveSenderTask sender = new ZabbixActiveSenderTask(activeAddr, activePort, resultsQueue, maxBatchSize, config);
 		senderTask = scheduler.scheduleAtFixedRate(sender, senderInterval, senderInterval, TimeUnit.SECONDS);
 		

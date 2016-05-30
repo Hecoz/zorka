@@ -65,6 +65,45 @@
                                 <include>com.jitlogic.contrib:libsnmp</include>
                                 <include>com.jitlogic.zorka:zorka-core</include>
                                 <include>org.fressian:fressian</include>
+<!--                                <include>io.searchbox:jest</include>
+                                <include>io.searchbox:jest-common</include>
+                                <include>com.google.guava:guava</include>
+                                <include>com.google.code.gson:gson</include>
+                                <include>org.apache.httpcomponents:httpasyncclient</include>
+                                <include>org.apache.httpcomponents:httpclient</include>
+                                <include>org.apache.httpcomponents:httpcore-nio</include>
+                                <include>org.apache.httpcomponents:httpcore</include>
+                                <include>commons-io:commons-io</include>
+                                <include>org.apache.commons:commons-lang3</include>
+                                <include>commons-logging:commons-logging</include>
+                                <include>org.slf4j:slf4j-api</include>-->
+                                
+<!--                                <include>org.elasticsearch:elasticsearch</include>
+                                <include>com.carrotsearch:hppc</include>
+                                <include>com.fasterxml.jackson.core:jackson-core</include>
+                                <include>com.fasterxml.jackson.dataformat:jackson-dataformat-cbor</include>
+                                <include>com.fasterxml.jackson.dataformat:jackson-dataformat-smile</include>
+                                <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yam</include>
+                                <include>com.google.guava:guava</include>
+                                <include>com.ning:compress-lzf</include>
+                                <include>com.tdunning:t-digest</include>
+                                <include>com.twitter:jsr166e</include>
+                                <include>commons-cli:commons-cli</include>
+                                <include>io.netty:netty</include>
+                                <include>joda-time:joda-time</include>
+                                <include>org.apache.lucene:lucene-analyzers-common</include>
+                                <include>org.apache.lucene:lucene-backward-codecs</include>
+                                <include>org.apache.lucene:lucene-core</include>
+                                <include>org.apache.lucene:lucene-highlighter</include>
+                                <include>org.apache.lucene:lucene-join</include>
+                                <include>org.apache.lucene:lucene-memory</include>
+                                <include>org.apache.lucene:lucene-queries</include>
+                                <include>org.apache.lucene:lucene-queryparser</include>
+                                <include>org.apache.lucene:lucene-spatial</include>
+                                <include>org.apache.lucene:lucene-suggest</include>
+                                <include>org.elasticsearch:securesm</include>
+                                <include>org.hdrhistogram:HdrHistogram</include>
+                                <include>org.joda:joda-convert</include>-->
                             </includes>
                             <rules>
                                 <rule>
@@ -83,6 +122,73 @@
                                     <pattern>org.fressian.**</pattern>
                                     <result>com.jitlogic.zorka.deps.fressian.@1</result>
                                 </rule>
+                                
+<!--                                <rule>
+                                    <pattern>io.searchbox.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.searchbox.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>org.apache.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.apache.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>com.google.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.google.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>org.slf4j.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.slf4j.@1</result>
+                                </rule>-->
+                                
+<!--                                <rule>
+                                    <pattern>org.elasticsearch.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.elasticsearch.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>com.carrotsearch.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.carrotsearch.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>com.fasterxml.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.fasterxml.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>com.google.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.google.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>com.ning.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.ning.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>com.spatial4j.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.spatial4j.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>com.tdunning.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.tdunning.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>com.twitter.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.twitter.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>org.apache.commons.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.apache.commons.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>org.apache.lucene.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.apache.lucene.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>org.HdrHistogram.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.HdrHistogram.@1</result>
+                                </rule>
+                                <rule>
+                                    <pattern>org.joda.**</pattern>
+                                    <result>com.jitlogic.zorka.deps.joda.@1</result>
+                                </rule>-->
+                                
                                 <keep>
                                     <pattern>com.jitlogic.zorka.**</pattern>
                                 </keep>

@@ -6,14 +6,14 @@
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  * <p/>
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  * <p/>
- * You should have received a copy of the GNU General Public License
- * along with this software. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this software. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.jitlogic.zorka.common.stats;
 
 import com.jitlogic.zorka.common.util.ZorkaUtil;
@@ -58,52 +58,50 @@ public class AgentDiagnostics {
     public static final int ZICO_PACKETS_DROPPED = 32;  // Packets dropped due to queue overflow
     public static final int ZICO_PACKETS_LOST = 33;     // Packets lost due to communication errors
     public static final int ZICO_RECONNECTS = 34;       // ZICO reconnects
-
+    public static final int TCP_REQUESTS = 35;
 
     private static final String[] counterNames = {
-            "MethodsInstrumented",  // METHODS_INSTRUMENTED = 1
-            "SpyErrors",            // SPY_ERRORS           = 2
-            "TracerErrors",         // TRACER_ERRORS        = 3
-            "AgentRequests",        // AGENT_REQUESTS       = 4
-            "AgentErrors",          // AGENT_ERRORS         = 5
-            "AgentTime",            // AGENT_TIME           = 6
-            "TrapsSubmitted",       // TRAPS_SUBMITTED      = 7
-            "TrapsSent",            // TRAPS_SENT           = 8
-            "TrapsDropped",         // TRAPS_DROPPED        = 9
-            "ZabbixRequests",       // ZABBIX_REQUESTS      = 10
-            "ZabbixErrors",         // ZABBIX_ERRORS        = 11
-            "ZabbixTime",           // ZABBIX_TIME          = 12
-            "NagiosRequests",       // NAGIOS_REQUESTS      = 13
-            "NagiosErrors",         // NAGIOS_ERRORS        = 14
-            "NagiosTime",           // NAGIOS_TIME          = 15
-            "PerfMonCycles",        // PMON_CYCLES          = 16
-            "PerfMonTime",          // PMON_TIME            = 17
-            "PerfPacketsSent",      // PMON_PACKETS_SENT    = 18
-            "PerfSamplesSent",      // PMON_SAMPLES_SENT    = 19
-            "PerfMonWarnings",      // PMON_WARNINGS        = 20
-            "PerfMonErrors",        // PMON_ERRORS          = 21
-            "PerfMonNulls",         // PMON_NULLS           = 22
-            "PerfMonQueries",       // PMON_QUERIES         = 23
-            "TracesSubmitted",      // TRACES_SUBMITTED     = 24
-            "TracesDropped",        // TRACES_DROPPED       = 25
-            "MetricsCreated",       // METRICS_CREATED      = 26
-            "AvgCounterErrors",     // AVG_CNT_ERRORS       = 27
-            "AvgCountersCreated",   // AVG_CNT_CREATED      = 28
-            "ConfigErrors",         // CONFIG_ERRORS        = 29
-            "SpySubmissions",       // SPY_SUBMISSIONS      = 30
-            "ZorkaStatsCreated",    // ZORKA_STATS_CREATED  = 31
-            "ZicoPacketsSent",      // ZICO_PACKETS_SENT    = 32
-            "ZicoPacketsDropped",   // ZICO_PACKETS_DROPPED = 33
-            "ZicoPacketsLost",      // ZICO_PACKETS_LOST    = 34
-            "ZicoReconnects",       // ZICO_RECONNECTS      = 35;
+        "MethodsInstrumented", // METHODS_INSTRUMENTED = 1
+        "SpyErrors", // SPY_ERRORS           = 2
+        "TracerErrors", // TRACER_ERRORS        = 3
+        "AgentRequests", // AGENT_REQUESTS       = 4
+        "AgentErrors", // AGENT_ERRORS         = 5
+        "AgentTime", // AGENT_TIME           = 6
+        "TrapsSubmitted", // TRAPS_SUBMITTED      = 7
+        "TrapsSent", // TRAPS_SENT           = 8
+        "TrapsDropped", // TRAPS_DROPPED        = 9
+        "ZabbixRequests", // ZABBIX_REQUESTS      = 10
+        "ZabbixErrors", // ZABBIX_ERRORS        = 11
+        "ZabbixTime", // ZABBIX_TIME          = 12
+        "NagiosRequests", // NAGIOS_REQUESTS      = 13
+        "NagiosErrors", // NAGIOS_ERRORS        = 14
+        "NagiosTime", // NAGIOS_TIME          = 15
+        "PerfMonCycles", // PMON_CYCLES          = 16
+        "PerfMonTime", // PMON_TIME            = 17
+        "PerfPacketsSent", // PMON_PACKETS_SENT    = 18
+        "PerfSamplesSent", // PMON_SAMPLES_SENT    = 19
+        "PerfMonWarnings", // PMON_WARNINGS        = 20
+        "PerfMonErrors", // PMON_ERRORS          = 21
+        "PerfMonNulls", // PMON_NULLS           = 22
+        "PerfMonQueries", // PMON_QUERIES         = 23
+        "TracesSubmitted", // TRACES_SUBMITTED     = 24
+        "TracesDropped", // TRACES_DROPPED       = 25
+        "MetricsCreated", // METRICS_CREATED      = 26
+        "AvgCounterErrors", // AVG_CNT_ERRORS       = 27
+        "AvgCountersCreated", // AVG_CNT_CREATED      = 28
+        "ConfigErrors", // CONFIG_ERRORS        = 29
+        "SpySubmissions", // SPY_SUBMISSIONS      = 30
+        "ZorkaStatsCreated", // ZORKA_STATS_CREATED  = 31
+        "ZicoPacketsSent", // ZICO_PACKETS_SENT    = 32
+        "ZicoPacketsDropped", // ZICO_PACKETS_DROPPED = 33
+        "ZicoPacketsLost", // ZICO_PACKETS_LOST    = 34
+        "ZicoReconnects", // ZICO_RECONNECTS      = 35
+        "TcpRequests", // TCP_REQUESTS      = 36;
     };
-
 
     private static Set<Integer> timeCounters = ZorkaUtil.set(AGENT_TIME, ZABBIX_TIME, NAGIOS_TIME, PMON_TIME);
 
-
     private static AtomicLong[] counters;
-
 
     public static void inc(int counter) {
         counters[counter].incrementAndGet();
@@ -115,11 +113,9 @@ public class AgentDiagnostics {
         }
     }
 
-
     public static void inc(int counter, long delta) {
         counters[counter].addAndGet(delta);
     }
-
 
     public static long get(int counter) {
         long v = (counter < counters.length && counter >= 0) ? counters[counter].get() : 0L;
