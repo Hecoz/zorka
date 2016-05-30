@@ -52,6 +52,7 @@ public class TcpAgent implements ZorkaService {
     /* Agent Settings */
     private String prefix;
     private ZorkaConfig config;
+    private String configFile;
 
     /**
      * Hostname agent advertises itself to zabbix.
@@ -113,13 +114,16 @@ public class TcpAgent implements ZorkaService {
     protected void setup() {
         log.debug(ZorkaLogger.ZAG_DEBUG, "Tcp setup...");
 
-        /* Zabbix Server IP:Port */
+        //config file path
+        configFile = config.stringCfg(prefix + ".config.file", "tcp.config");
+        
+        /* tcp server ip:port */
         activeIpPort = config.stringCfg(prefix + ".server.addr", defaultAddr);
         String[] ipPort = activeIpPort.split(":");
         String activeIp = ipPort[0];
         activePort = (ipPort.length < 2 || ipPort[1].length() == 0) ? defaultPort : Integer.parseInt(ipPort[1]);
 
-        /* Zabbix Server address */
+        /* tcp server address */
         try {
             activeAddr = InetAddress.getByName(activeIp.trim());
         } catch (UnknownHostException e) {
@@ -163,6 +167,8 @@ public class TcpAgent implements ZorkaService {
                 log.debug(ZorkaLogger.ZAG_DEBUG, "Tcp Scheduling sender task");
                 scheduleTasks();
 
+                //TODO: load items from config file
+                
                 CheckQueryItem item = new CheckQueryItem();
                 item.setKey("jvm.heaputil[\"HeapMemoryUsage\"]");
                 item.setDelay(5);
@@ -239,8 +245,8 @@ public class TcpAgent implements ZorkaService {
 
         // Insert Tasks
         for (CheckQueryItem task : tasks) {
-            TcpTask zabbixActiveTask = new TcpTask(agentHost, task, agent, translator, resultsQueue);
-            ScheduledFuture<?> taskHandler = scheduler.scheduleAtFixedRate(zabbixActiveTask, 5, task.getDelay(), TimeUnit.SECONDS);
+            TcpTask tcpTask = new TcpTask(agentHost, task, agent, translator, resultsQueue);
+            ScheduledFuture<?> taskHandler = scheduler.scheduleAtFixedRate(tcpTask, 5, task.getDelay(), TimeUnit.SECONDS);
             log.debug(ZorkaLogger.ZAG_DEBUG, "Tcp - task: " + task.toString());
             runningTasks.put(task, taskHandler);
         }

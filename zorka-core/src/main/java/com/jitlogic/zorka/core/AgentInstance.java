@@ -33,9 +33,7 @@ import com.jitlogic.zorka.core.perfmon.PerfMonLib;
 import com.jitlogic.zorka.core.spy.*;
 import com.jitlogic.zorka.common.tracedata.SymbolRegistry;
 import com.jitlogic.zorka.core.integ.*;
-import com.jitlogic.zorka.core.integ.elasticsearch.ElasticSearchAgent;
 import com.jitlogic.zorka.core.integ.tcp.TcpAgent;
-import com.jitlogic.zorka.core.integ.zabbix.ZabbixActiveAgentFixed;
 import com.jitlogic.zorka.core.mbeans.MBeanServerRegistry;
 import com.jitlogic.zorka.core.normproc.NormLib;
 import com.jitlogic.zorka.core.util.DaemonThreadFactory;
@@ -96,11 +94,6 @@ public class AgentInstance implements ZorkaService {
      * passes them to BSH agent
      */
     private ZabbixAgent zabbixAgent;
-
-    /**
-     * Reference to elasticsearch agent object
-     */
-    private ElasticSearchAgent elasticSearchAgent;
 
     /**
      * Reference to generic tcp agent object
@@ -248,11 +241,6 @@ public class AgentInstance implements ZorkaService {
             log.info(ZorkaLogger.ZAG_CONFIG, "Enabling Nagios support ...");
             getNagiosAgent().start();
             zorkaAgent.put("nagios", getNagiosLib());
-        }
-
-        if (config.boolCfg("elasticsearch", false)) {
-            log.info(ZorkaLogger.ZAG_CONFIG, "Enabling Elastic Search Agent subsystem ...");
-            getElasticSearchAgent().start();
         }
 
         if (config.boolCfg("tcp", false)) {
@@ -405,9 +393,7 @@ public class AgentInstance implements ZorkaService {
 
     public synchronized ZabbixActiveAgent getZabbixActiveAgent() {
         if (zabbixActiveAgent == null) {
-            zabbixActiveAgent = config.boolCfg("zabbix.active.fixed", false)
-                    ? new ZabbixActiveAgentFixed(config, getZorkaAgent(), getTranslator(), getScheduledExecutor())
-                    : new ZabbixActiveAgent(config, getZorkaAgent(), getTranslator(), getScheduledExecutor());
+            zabbixActiveAgent = new ZabbixActiveAgent(config, getZorkaAgent(), getTranslator(), getScheduledExecutor());
         }
         return zabbixActiveAgent;
     }
@@ -417,13 +403,6 @@ public class AgentInstance implements ZorkaService {
             zabbixAgent = new ZabbixAgent(config, getZorkaAgent(), getTranslator());
         }
         return zabbixAgent;
-    }
-
-    public synchronized ElasticSearchAgent getElasticSearchAgent() {
-        if (elasticSearchAgent == null) {
-            elasticSearchAgent = new ElasticSearchAgent(config, getZorkaAgent(), getTranslator(), getScheduledExecutor());
-        }
-        return elasticSearchAgent;
     }
 
     public synchronized TcpAgent getTcpAgent() {
@@ -592,10 +571,6 @@ public class AgentInstance implements ZorkaService {
             nagiosAgent.shutdown();
         }
 
-        if (elasticSearchAgent != null) {
-            elasticSearchAgent.shutdown();
-        }
-
         if (tcpAgent != null) {
             tcpAgent.shutdown();
         }
@@ -618,10 +593,6 @@ public class AgentInstance implements ZorkaService {
 
         if (config.boolCfg("nagios", false)) {
             getNagiosAgent().restart();
-        }
-
-        if (config.boolCfg("elasticsearch", false)) {
-            getElasticSearchAgent().restart();
         }
 
         if (config.boolCfg("tcp", false)) {
