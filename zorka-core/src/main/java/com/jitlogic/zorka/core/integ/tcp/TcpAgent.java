@@ -35,6 +35,10 @@ import com.jitlogic.zorka.common.util.ZorkaConfig;
 import com.jitlogic.zorka.common.util.ZorkaLog;
 import com.jitlogic.zorka.common.util.ZorkaLogger;
 import com.jitlogic.zorka.core.ZorkaBshAgent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * Zabbix Active Agent integrates Zorka with Zabbix server. It handles incoming
@@ -48,7 +52,6 @@ public class TcpAgent implements ZorkaService {
     private final ZorkaLog log = ZorkaLogger.getLog(TcpAgent.class);
     private volatile boolean running;
 
-
     /* Agent Settings */
     private String prefix;
     private ZorkaConfig config;
@@ -61,24 +64,15 @@ public class TcpAgent implements ZorkaService {
     private String activeIpPort;
 
     /**
-     * Interval between fetching new item list from Zabbix.
-     */
-    //private long activeCheckInterval;
-    /**
      * Interval between sender cycles
      */
     private long senderInterval;
-
     private int maxBatchSize;
-
     private int maxCacheSize;
-
 
     /* Connection Settings */
     private InetAddress activeAddr;
-    private String defaultAddr;
     private int activePort;
-    private int defaultPort;
     private Socket socket;
 
 
@@ -100,8 +94,6 @@ public class TcpAgent implements ZorkaService {
     public TcpAgent(ZorkaConfig config, ZorkaBshAgent agent, QueryTranslator translator, ScheduledExecutorService scheduledExecutorService) {
         this.prefix = "tcp";
         this.config = config;
-        this.defaultPort = 10051;
-        this.defaultAddr = "127.0.0.1:" + this.defaultPort;
 
         this.scheduler = scheduledExecutorService;
 
@@ -116,12 +108,12 @@ public class TcpAgent implements ZorkaService {
 
         //config file path
         configFile = config.stringCfg(prefix + ".config.file", "tcp.config");
-        
+
         /* tcp server ip:port */
-        activeIpPort = config.stringCfg(prefix + ".server.addr", defaultAddr);
+        activeIpPort = config.stringCfg(prefix + ".server.addr", "127.0.0.1:10051");
         String[] ipPort = activeIpPort.split(":");
         String activeIp = ipPort[0];
-        activePort = (ipPort.length < 2 || ipPort[1].length() == 0) ? defaultPort : Integer.parseInt(ipPort[1]);
+        activePort = (ipPort.length < 2 || ipPort[1].length() == 0) ? 10051 : Integer.parseInt(ipPort[1]);
 
         /* tcp server address */
         try {
@@ -166,20 +158,46 @@ public class TcpAgent implements ZorkaService {
 
                 log.debug(ZorkaLogger.ZAG_DEBUG, "Tcp Scheduling sender task");
                 scheduleTasks();
-
-                //TODO: load items from config file
-                
-                CheckQueryItem item = new CheckQueryItem();
-                item.setKey("jvm.heaputil[\"HeapMemoryUsage\"]");
-                item.setDelay(5);
-                ArrayList<CheckQueryItem> itens = new ArrayList<CheckQueryItem>();
-                itens.add(item);
-                scheduleTasks(itens);
-
+                loadQueries();
                 running = true;
             }
         }
+    }
 
+    private void loadQueries() {
+        File file = new File(configFile);
+        if (!file.exists()) {
+            log.warn(ZorkaLogger.ZAG_WARNINGS, "No queries loaded! Missing configuration file: " + configFile);
+            return;
+        }
+        Properties props = new Properties();
+        InputStream is = null;
+        try {
+            is = new FileInputStream(file);
+            props.load(is);
+        } catch (IOException ex) {
+            log.warn(ZorkaLogger.ZAG_WARNINGS, "No queries loaded!", ex);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException ex) {
+                    log.warn(ZorkaLogger.ZAG_WARNINGS, "Error closing file: " + configFile, ex);
+                }
+            }
+        }
+
+        ArrayList<CheckQueryItem> itens = new ArrayList<CheckQueryItem>();
+        for (Map.Entry<Object, Object> entry : props.entrySet()) {
+            String key = (String) entry.getKey();
+            String delayStr = (String) entry.getValue();
+            int delay = Integer.parseInt(delayStr);
+            CheckQueryItem item = new CheckQueryItem();
+            item.setKey(key);
+            item.setDelay(delay);
+            itens.add(item);
+        }
+        scheduleTasks(itens);
     }
 
     @SuppressWarnings("deprecation")
