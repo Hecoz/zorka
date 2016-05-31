@@ -32,11 +32,11 @@ public class TcpTask implements Runnable, ZorkaRequestHandler {
     /* Logger */
     private final ZorkaLog log = ZorkaLogger.getLog(TcpTask.class);
 
-    private String agentHost;
-    private CheckQueryItem item;
-    private ZorkaBshAgent agent;
-    private QueryTranslator translator;
-    private ConcurrentLinkedQueue<CheckResult> responseQueue;
+    private final String agentHost;
+    private final CheckQueryItem item;
+    private final ZorkaBshAgent agent;
+    //private final QueryTranslator translator;
+    private final ConcurrentLinkedQueue<CheckResult> responseQueue;
 
     private long clock;
 
@@ -44,16 +44,16 @@ public class TcpTask implements Runnable, ZorkaRequestHandler {
         this.agentHost = agentHost;
         this.item = item;
         this.agent = agent;
-        this.translator = translator;
+        //this.translator = translator;
         this.responseQueue = responseQueue;
     }
 
     @Override
     public void run() {
-        String key = item.getKey();
-        log.debug(ZorkaLogger.ZAG_DEBUG, "Running task: " + key);
+        log.debug(ZorkaLogger.ZAG_DEBUG, "Running task: " + item.getKey());
 
-        String expr = translator.translate(key);
+        //String expr = translator.translate(item.getExpression());
+        String expr = item.getExpression();
         log.debug(ZorkaLogger.ZAG_DEBUG, "Translated task: " + expr);
 
         clock = (new Date()).getTime() / 1000L;

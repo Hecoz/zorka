@@ -190,11 +190,13 @@ public class TcpAgent implements ZorkaService {
         ArrayList<CheckQueryItem> itens = new ArrayList<CheckQueryItem>();
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             String key = (String) entry.getKey();
-            String delayStr = (String) entry.getValue();
-            int delay = Integer.parseInt(delayStr);
+            String[] config = entry.getValue().toString().split(";");
+            String expresion = config[0];
+            int delay = Integer.parseInt(config[1]);
             CheckQueryItem item = new CheckQueryItem();
             item.setKey(key);
             item.setDelay(delay);
+            item.setExpression(expresion);
             itens.add(item);
         }
         scheduleTasks(itens);

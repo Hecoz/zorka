@@ -15,7 +15,6 @@
  */
 package com.jitlogic.zorka.core.integ.tcp;
 
-import com.jitlogic.zorka.core.integ.zabbix.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;

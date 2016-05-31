@@ -17,8 +17,6 @@
  */
 package com.jitlogic.zorka.core.integ.tcp;
 
-import com.jitlogic.zorka.common.util.JSONWriter;
-
 public final class TcpUtils {
 
     /**
@@ -39,7 +37,7 @@ public final class TcpUtils {
      * @return
      */
     public static String createAgentData(BulkResult result) {
-        return new JSONWriter(false).write(result);
+        return result.toString();
     }
 
 }
