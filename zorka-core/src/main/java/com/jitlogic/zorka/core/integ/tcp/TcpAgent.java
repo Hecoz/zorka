@@ -1,18 +1,17 @@
 /**
  * Copyright 2014 Daniel Makoto Iguchi <daniel.iguchi@gmail.com>
  * Copyright 2012-2015 Rafal Lewczuk <rafal.lewczuk@jitlogic.com>
- *
- * ZORKA is free software. You can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * ZORKA is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * ZORKA. If not, see <http://www.gnu.org/licenses/>.
+ * <p>
+ * ZORKA is free software. You can redistribute it and/or modify it under the terms of the GNU
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * <p>
+ * ZORKA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License along with ZORKA. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 package com.jitlogic.zorka.core.integ.tcp;
 
@@ -23,7 +22,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -41,8 +39,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Zabbix Active Agent integrates Zorka with Zabbix server. It handles incoming
- * zabbix requests and forwards to BSH agent.
+ * Zabbix Active Agent integrates Zorka with Zabbix server. It handles incoming zabbix requests and
+ * forwards to BSH agent.
  *
  * @author
  */
@@ -67,6 +65,7 @@ public class TcpAgent implements ZorkaService {
      * Interval between sender cycles
      */
     private long senderInterval;
+    private int senderRetries;
     private int maxBatchSize;
     private int maxCacheSize;
 
@@ -79,7 +78,8 @@ public class TcpAgent implements ZorkaService {
     /* Scheduler Management */
     private ScheduledExecutorService scheduler;
     private HashMap<CheckQueryItem, ScheduledFuture<?>> runningTasks;
-    private ConcurrentLinkedQueue<CheckResult> resultsQueue;
+    //private ConcurrentLinkedQueue<CheckResult> resultsQueue;
+    private BulkResult results;
     private ScheduledFuture<?> senderTask;
 
     /* BSH agent */
@@ -91,7 +91,8 @@ public class TcpAgent implements ZorkaService {
     /**
      * Creates zabbix active agent.
      */
-    public TcpAgent(ZorkaConfig config, ZorkaBshAgent agent, QueryTranslator translator, ScheduledExecutorService scheduledExecutorService) {
+    public TcpAgent(ZorkaConfig config, ZorkaBshAgent agent, QueryTranslator translator,
+            ScheduledExecutorService scheduledExecutorService) {
         this.prefix = "tcp";
         this.config = config;
 
@@ -113,27 +114,33 @@ public class TcpAgent implements ZorkaService {
         activeIpPort = config.stringCfg(prefix + ".server.addr", "127.0.0.1:10051");
         String[] ipPort = activeIpPort.split(":");
         String activeIp = ipPort[0];
-        activePort = (ipPort.length < 2 || ipPort[1].length() == 0) ? 10051 : Integer.parseInt(ipPort[1]);
+        activePort = (ipPort.length < 2 || ipPort[1].length() == 0) ? 10051 : Integer.parseInt(
+                ipPort[1]);
 
         /* tcp server address */
         try {
             activeAddr = InetAddress.getByName(activeIp.trim());
         } catch (UnknownHostException e) {
-            log.error(ZorkaLogger.ZAG_ERRORS, "Cannot parse " + prefix + ".server.addr in zorka.properties", e);
+            log.error(ZorkaLogger.ZAG_ERRORS, "Cannot parse " + prefix
+                    + ".server.addr in zorka.properties", e);
             AgentDiagnostics.inc(AgentDiagnostics.CONFIG_ERRORS);
         }
 
         agentHost = config.stringCfg("zorka.hostname", "zorka");
         senderInterval = config.intCfg(prefix + ".sender.interval", 60);
+        senderRetries = config.intCfg(prefix + ".sender.retries", 5);
         maxBatchSize = config.intCfg(prefix + ".batch.size", 10);
         maxCacheSize = config.intCfg(prefix + ".cache.size", 150);
-        log.info(ZorkaLogger.ZAG_INFO, "Tcp Agent (" + agentHost + ") will send up to " + maxBatchSize + " metrics every "
-                + senderInterval + " seconds. Agent will persist up to " + maxCacheSize + " metrics per " + (senderInterval * 2)
+        log.info(ZorkaLogger.ZAG_INFO, "Tcp Agent (" + agentHost + ") will send up to "
+                + maxBatchSize + " metrics every "
+                + senderInterval + " seconds. Agent will persist up to " + maxCacheSize
+                + " metrics per " + (senderInterval * 2)
                 + " seconds, exceeding records will be discarded.");
 
         /* scheduler's infra */
         runningTasks = new HashMap<CheckQueryItem, ScheduledFuture<?>>();
-        resultsQueue = new ConcurrentLinkedQueue<CheckResult>();
+        //resultsQueue = new ConcurrentLinkedQueue<CheckResult>();
+        results = new BulkResult(agentHost);
     }
 
     public void start() {
@@ -144,7 +151,8 @@ public class TcpAgent implements ZorkaService {
                 socket = new Socket(activeAddr, activePort);
                 log.info(ZorkaLogger.ZAG_ERRORS, "Successfuly connected to " + activeIpPort);
             } catch (IOException e) {
-                log.error(ZorkaLogger.ZAG_ERRORS, "Failed to connect to " + activeIpPort + ". Will try to connect later.", e);
+                log.error(ZorkaLogger.ZAG_ERRORS, "Failed to connect to " + activeIpPort
+                        + ". Will try to connect later.", e);
             } finally {
                 if (socket != null) {
                     try {
@@ -167,7 +175,8 @@ public class TcpAgent implements ZorkaService {
     private void loadQueries() {
         File file = new File(configFile);
         if (!file.exists()) {
-            log.warn(ZorkaLogger.ZAG_WARNINGS, "No queries loaded! Missing configuration file: " + configFile);
+            log.warn(ZorkaLogger.ZAG_WARNINGS, "No queries loaded! Missing configuration file: "
+                    + configFile);
             return;
         }
         Properties props = new Properties();
@@ -217,8 +226,9 @@ public class TcpAgent implements ZorkaService {
                 }
                 runningTasks.clear();
 
-                log.debug(ZorkaLogger.ZAG_DEBUG, "Tcp clearing dataQueue...");
-                resultsQueue.clear();
+                log.debug(ZorkaLogger.ZAG_DEBUG, "Tcp clearing data...");
+                //resultsQueue.clear();
+                results.clear();
 
                 log.debug(ZorkaLogger.ZAG_DEBUG, "Tcp closing socket...");
                 if (socket != null) {
@@ -226,7 +236,8 @@ public class TcpAgent implements ZorkaService {
                     socket = null;
                 }
             } catch (IOException e) {
-                log.error(ZorkaLogger.ZAG_ERRORS, "I/O error in zabbix core main loop: " + e.getMessage());
+                log.error(ZorkaLogger.ZAG_ERRORS, "I/O error in zabbix core main loop: " + e.
+                        getMessage());
             }
         }
     }
@@ -252,11 +263,9 @@ public class TcpAgent implements ZorkaService {
     }
 
     private void scheduleTasks() {
-        TcpSenderTask sender = new TcpSenderTask(agentHost, activeAddr, activePort, resultsQueue, maxBatchSize, config);
-        senderTask = scheduler.scheduleAtFixedRate(sender, senderInterval, senderInterval, TimeUnit.SECONDS);
-
-        TcpCleanerTask cleaner = new TcpCleanerTask(resultsQueue, maxCacheSize);
-        senderTask = scheduler.scheduleAtFixedRate(cleaner, senderInterval * 2, senderInterval * 2, TimeUnit.SECONDS);
+        TcpSenderTask sender = new TcpSenderTask(activeAddr, activePort, senderRetries, results);
+        senderTask = scheduler.scheduleAtFixedRate(sender, senderInterval, senderInterval,
+                TimeUnit.SECONDS);
     }
 
     private void scheduleTasks(ArrayList<CheckQueryItem> tasks) {
@@ -265,8 +274,9 @@ public class TcpAgent implements ZorkaService {
 
         // Insert Tasks
         for (CheckQueryItem task : tasks) {
-            TcpTask tcpTask = new TcpTask(agentHost, task, agent, translator, resultsQueue);
-            ScheduledFuture<?> taskHandler = scheduler.scheduleAtFixedRate(tcpTask, 5, task.getDelay(), TimeUnit.SECONDS);
+            TcpTask tcpTask = new TcpTask(task, agent, results);
+            ScheduledFuture<?> taskHandler = scheduler.scheduleAtFixedRate(tcpTask, 5, task.
+                    getDelay(), TimeUnit.SECONDS);
             log.debug(ZorkaLogger.ZAG_DEBUG, "Tcp - task: " + task.toString());
             runningTasks.put(task, taskHandler);
         }

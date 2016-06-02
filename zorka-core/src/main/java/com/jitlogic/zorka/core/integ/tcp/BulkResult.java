@@ -5,8 +5,8 @@
  */
 package com.jitlogic.zorka.core.integ.tcp;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -14,24 +14,16 @@ import java.util.Map;
  */
 public class BulkResult {
 
-    private String host;
+    private final String host;
 
-    private Map<String, StringBuilder> data = new HashMap<String, StringBuilder>();
+    private final Map<String, StringBuffer> data = new ConcurrentHashMap<String, StringBuffer>();
 
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
+    public BulkResult(String host) {
         this.host = host;
     }
 
-    public Map<String, StringBuilder> getData() {
-        return data;
-    }
-
-    public void setData(Map<String, StringBuilder> data) {
-        this.data = data;
+    public String getHost() {
+        return host;
     }
 
     public void add(CheckResult result) {
@@ -39,21 +31,36 @@ public class BulkResult {
             return;
         }
 
-        StringBuilder builder;
+        StringBuffer buffer;
         if (!data.containsKey(result.getKey())) {
-            builder = new StringBuilder();
-            data.put(result.getKey(), builder);
+            buffer = new StringBuffer();
+            data.put(result.getKey(), buffer);
         } else {
-            builder = data.get(result.getKey());
-            builder.append("|");
+            buffer = data.get(result.getKey());
+            buffer.append("|");
         }
-        builder.append(result.getClock()).append("@").append(result.getValue());
+        buffer.append(result.getClock()).append("@").append(result.getValue());
+    }
+
+    public String retrieve() {
+        String msg = this.toString();
+        this.clear();
+        return msg;
+    }
+
+    public void clear() {
+        for (StringBuffer buffer : data.values()) {
+            buffer.delete(0, buffer.length());
+        }
     }
 
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        for (Map.Entry<String, StringBuilder> entry : data.entrySet()) {
+        for (Map.Entry<String, StringBuffer> entry : data.entrySet()) {
+            if (entry.getValue().length() == 0) {
+                continue;
+            }
             str.append(host);
             str.append("\t");
             str.append(entry.getKey());
