@@ -80,7 +80,8 @@ if (zorka.boolCfg("tracer")) {
       zorka.intCfg("tracer.tcp.retry.time", 125L),
       zorka.intCfg("tracer.tcp.retry.exp", 1L),
       zorka.intCfg("tracer.tcp.timeout", 60000),
-      zorka.intCfg("tracer.tcp.send.interval", 15)));
+      zorka.intCfg("tracer.tcp.send.interval", 15),
+      zorka.stringCfg("tracer.tcp.package", null)));
       zorka.logDebug("Setting tracer.tcp.send.interval to " + zorka.intCfg("tracer.tcp.send.interval", 15));
   }
 

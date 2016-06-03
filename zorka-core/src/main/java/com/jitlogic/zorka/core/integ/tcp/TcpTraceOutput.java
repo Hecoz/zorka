@@ -80,6 +80,11 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
     private long packetSize;
 
     /**
+     * Package to generate performance counters for
+     */
+    private String performanceTargetPackage;
+
+    /**
      * Creates trace output object.
      *
      * @param metricsRegistry
@@ -97,10 +102,10 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
     public TcpTraceOutput(
             SymbolRegistry symbolRegistry, MetricsRegistry metricsRegistry, String addr, int port,
             String hostname,
-            int qlen, long packetSize, int retries, long retryTime, long retryTimeExp,
-            int timeout, int interval) throws IOException {
+            int qlen, int packetSize, int retries, long retryTime, long retryTimeExp,
+            int timeout, int interval, String performanceTargetPackage) throws IOException {
 
-        super("tcp-output", qlen, 1, interval);
+        super("tcp-output", qlen, packetSize, interval);
 
         log.debug(ZorkaLogger.ZAG_DEBUG, "Configured tracer output: host=" + hostname
                 + ", addr=" + addr
@@ -120,6 +125,8 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
         this.retries = retries;
         this.retryTime = retryTime;
         this.retryTimeExp = retryTimeExp;
+
+        this.performanceTargetPackage = performanceTargetPackage;
 
         /* compatibility purposes */
         this.os = new ByteArrayOutputStream();
@@ -163,17 +170,7 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
                         + " -> " + serverAddr + ":" + serverPort);
                 socket = new Socket(serverAddr, serverPort);
 
-//                while (os.size() < packetSize && submitQueue.size() > 0) {
-//                    SymbolicRecord rec = submitQueue.take();
-//                    // save to temp list
-//                    packet.add(rec);
-//                }
-
-                //String message = ZabbixUtils.createAgentData(results, clock);
-                //byte[] buf = TcpUtils.encode(message);
-
                 OutputStream out = socket.getOutputStream();
-                //out.write(buf);
                 PrintWriter writer = new PrintWriter(out);
                 for (SymbolicRecord symbolicRecord : packet) {
                     printRecord(writer, symbolicRecord);
@@ -194,14 +191,6 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
                         + ". Trace will be lost.");
                 AgentDiagnostics.inc(AgentDiagnostics.ZICO_PACKETS_LOST);
                 return;
-
-//            } catch (InterruptedException e) {
-//                /* Error while taking record from queue */
-//                log.error(ZorkaLogger.ZCL_STORE, "Error retrieving trace record: " + e
-//                        + ". Trace will be lost.");
-//                AgentDiagnostics.inc(AgentDiagnostics.ZICO_PACKETS_LOST);
-//                return;
-
             } catch (IOException e) {
                 /* Error while sending */
                 log.error(ZorkaLogger.ZCL_STORE, "Error sending trace record: " + e
@@ -221,7 +210,7 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
             }
 
             rt *= retryTimeExp;
-        } 
+        }
 
         AgentDiagnostics.inc(AgentDiagnostics.ZICO_PACKETS_LOST);
         log.error(ZorkaLogger.ZCL_STORE,
@@ -230,17 +219,19 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
 
     private void printRecord(PrintWriter writer, SymbolicRecord rec) {
         if (rec instanceof MethodCallCounterRecord) {
-            // TODO Auto-generated method stub
+            System.out.println(rec);
         } else if (rec instanceof PerfRecord) {
             //list = perfRecordToData(rec);
+            System.out.println(rec);
         } else if (rec instanceof SymbolicException) {
-            // TODO Auto-generated method stub
+            System.out.println(rec);
         } else if (rec instanceof SymbolicStackElement) {
-            // TODO Auto-generated method stub
+            System.out.println(rec);
         } else if (rec instanceof TraceMarker) {
-            // TODO Auto-generated method stub
+            System.out.println(rec);
         } else if (rec instanceof TraceRecord) {
-            new TraceRecordOutputPrinter(symbolRegistry, writer).print((TraceRecord) rec);
+            new TraceRecordOutputPrinter(symbolRegistry, writer, performanceTargetPackage).print(
+                    (TraceRecord) rec);
         }
     }
 
