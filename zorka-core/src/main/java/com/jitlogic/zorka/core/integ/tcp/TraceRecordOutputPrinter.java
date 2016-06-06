@@ -21,6 +21,8 @@ import java.util.Map;
  */
 public class TraceRecordOutputPrinter {
 
+    private final String app;
+
     private final SymbolRegistry symbolRegistry;
 
     private final PrintWriter writer;
@@ -33,8 +35,9 @@ public class TraceRecordOutputPrinter {
 
     private List<MethodPerfCounter> performance = new ArrayList<MethodPerfCounter>();
 
-    public TraceRecordOutputPrinter(SymbolRegistry symbolRegistry, PrintWriter writer,
+    public TraceRecordOutputPrinter(String app, SymbolRegistry symbolRegistry, PrintWriter writer,
             String performanceTargetPackage) {
+        this.app = app;
         this.symbolRegistry = symbolRegistry;
         this.writer = writer;
         this.performanceTargetPackage = performanceTargetPackage;
@@ -44,8 +47,8 @@ public class TraceRecordOutputPrinter {
 
     public void print(TraceRecord traceRecord) throws UnsupportedEncodingException {
         long clock = traceRecord.getClock() / 1000l;
-        writer.printf("{ \"type\":\"trace\", \"clock\" : %d, \"time\": %d", clock, traceRecord.
-                getTime() / 1000000l);
+        writer.printf("{ \"app\":\"%s\", \"type\":\"trace\", \"clock\" : %d, \"time\": %d", app,
+                clock, traceRecord.getTime() / 1000000l);
         if (traceRecord.getAttrs() != null) {
             for (Map.Entry<Integer, Object> entry : traceRecord.getAttrs().entrySet()) {
                 String attr = symbolRegistry.symbolName(entry.getKey()).toLowerCase();
@@ -97,9 +100,9 @@ public class TraceRecordOutputPrinter {
         if (klass != null && klass.startsWith(performanceTargetPackage)) {
             String method = symbolRegistry.symbolName(traceRecord.getMethodId());
             long time = traceRecord.getTime() / 1000000l;
-            writer.printf("{ \"type\":\"perf\", \"method\": \"%s.%s()\",\"time\":%d}\n", klass.
-                    substring(
-                            performanceTargetPackageCropIndex), method, time);
+            writer.printf(
+                    "{ \"app\":\"%s\", \"type\":\"perf\", \"method\": \"%s.%s()\",\"time\":%d}\n",
+                    app, klass.substring(performanceTargetPackageCropIndex), method, time);
         }
         if (traceRecord.getChildren() != null) {
             for (TraceRecord child : traceRecord.getChildren()) {

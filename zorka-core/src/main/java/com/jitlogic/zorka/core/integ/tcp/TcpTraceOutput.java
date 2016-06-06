@@ -236,7 +236,7 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
         } else if (rec instanceof TraceMarker) {
             System.out.println(rec);
         } else if (rec instanceof TraceRecord) {
-            new TraceRecordOutputPrinter(symbolRegistry, writer, performanceTargetPackage).print(
+            new TraceRecordOutputPrinter(hostname, symbolRegistry, writer, performanceTargetPackage).print(
                     (TraceRecord) rec);
         }
     }
