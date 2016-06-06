@@ -130,4 +130,14 @@ public class NagiosLib {
 
         return cmd.cmd(args);
     }
+    
+    public String cmdSimple(String id, Object...args) {
+        NagiosCommand cmd = commands.get(id);
+
+        if (cmd == null) {
+            return null;
+        }
+
+        return ((NagiosJmxCommand)cmd).cmdSimple(args).getData();
+    }
 }

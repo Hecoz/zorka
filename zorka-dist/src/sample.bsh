@@ -37,6 +37,31 @@ zorka.require("jvm.bsh");
 
 __sample() {
 
+    
+    millis_to_date_string(millis) {
+      return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date(millis));
+    }
+    
+    milis_to_hours(millis) {
+      return ((float)millis) / (1000.0*60.0*60.0);
+    }
+    
+    nagios.defcmd("GCNew", nagios.jmxscan(
+      zorka.query("java", "java.lang:name=PS Scavenge,type=GarbageCollector").get("CollectionTime")
+        .metric(perfmon.timedDelta("LVAL1", "GC CPU time", "%CPU").divide(10))
+      ).withLabel("PS Scavenge")
+       .withSummaryLine("${LVAL0}")
+       .withPerfLine("${LVAL0}")
+       .withTextLine("${LVAL0}"));
+       
+    nagios.defcmd("GCOld", nagios.jmxscan(
+      zorka.query("java", "java.lang:name=PS MarkSweep,type=GarbageCollector").get("CollectionTime")
+        .metric(perfmon.timedDelta("LVAL1", "GC CPU time", "%CPU").divide(10))
+      ).withLabel("PS Scavenge")
+       .withSummaryLine("${LVAL0}")
+       .withPerfLine("${LVAL0}")
+       .withTextLine("${LVAL0}"));
+
     // This defines sample parameter that can be defined in zorka.properties
     zorka.defCfg("sample.pool", "PS Old Gen");
 

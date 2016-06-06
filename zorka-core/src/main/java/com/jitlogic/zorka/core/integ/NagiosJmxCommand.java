@@ -251,9 +251,80 @@ public class NagiosJmxCommand extends AbstractNagiosCommand {
         return NrpePacket.response(status, msg);
     }
 
+    public NrpePacket runSimpleScan(long clock) {
 
+        Map<String, List<PerfSample>> results = fetchResults(clock);
+
+        List<String> labels = new ArrayList<String>(results.size());
+        Map<String,Map<String,Object>> rdata = new HashMap<String, Map<String, Object>>();
+
+        int ncols = 0;
+        for (Map.Entry<String,List<PerfSample>> e : results.entrySet()) {
+            ncols = Math.max(ncols, e.getValue().size());
+            labels.add(e.getKey());
+            rdata.put(e.getKey(), toRData(e.getKey(), e.getValue()));
+        }
+
+        Collections.sort(labels);
+
+        Map<String,Object> sdata = null;
+
+        switch (selMode) {
+            case SEL_SUM:
+                sdata = sumRData(ncols, rdata);
+                break;
+            case SEL_FIRST:
+                sdata = rdata.get(labels.get(0));
+                labels.remove(0);
+                break;
+            case SEL_ONE:
+                for (String l : labels) {
+                    String rv = ObjectInspector.get(rdata, l, "ATTR", selName);
+                    if (selVals.contains(""+rv)) {
+                        sdata = rdata.get(l);
+                        labels.remove(l);
+                        break;
+                    }
+                }
+                break;
+        }
+
+        if (sdata == null) {
+            log.error(ZorkaLogger.ZPM_ERRORS, "Cannot calculate summary data for nagios request.");
+            return NrpePacket.error("Cannot calculate summary data.");
+        }
+
+        int status = calcStatus(sdata);
+
+        //sdata.put("STATUS", RC_CODES[status]);
+
+        //String summary = ObjectInspector.substitute(tmplSummary, sdata);
+        String perfLine = ObjectInspector.substitute(tmplPerfLine, sdata);
+
+        List<String> textLines = new ArrayList<String>(labels.size());
+        List<String> perfLines = new ArrayList<String>(labels.size());
+
+        for (String l : labels) {
+            Map<String,Object> rd = rdata.get(l);
+            textLines.add(ObjectInspector.substitute(tmplTextLine, rd));
+            perfLines.add(ObjectInspector.substitute(tmplPerfLine, rd));
+        }
+
+        String msg = perfLine;
+
+//        if (labels.size() > 0) {
+//            msg += "\n" + ZorkaUtil.join("\n", textLines) + "| " + ZorkaUtil.join("\n", perfLines);
+//        }
+
+        return NrpePacket.response(status, msg);
+    }
+    
     @Override
     public NrpePacket cmd(Object... args) {
+        return runSimpleScan(System.currentTimeMillis());
+    }
+    
+    public NrpePacket cmdSimple(Object... args) {
         return runScan(System.currentTimeMillis());
     }
 

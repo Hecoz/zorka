@@ -246,6 +246,7 @@ public class AgentInstance implements ZorkaService {
         if (config.boolCfg("tcp", false)) {
             log.info(ZorkaLogger.ZAG_CONFIG, "Enabling TCP Generic Agent subsystem ...");
             getTcpAgent().start();
+            zorkaAgent.put("nagios", getNagiosLib());
         }
 
         getZorkaAgent().put("normalizers", getNormLib());
