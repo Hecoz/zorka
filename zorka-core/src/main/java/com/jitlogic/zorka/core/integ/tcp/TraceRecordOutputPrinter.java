@@ -10,6 +10,7 @@ import com.jitlogic.zorka.common.tracedata.SymbolicException;
 import com.jitlogic.zorka.common.tracedata.SymbolicStackElement;
 import com.jitlogic.zorka.common.tracedata.TraceRecord;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class TraceRecordOutputPrinter {
                 : performanceTargetPackage.length() + 1;
     }
 
-    public void print(TraceRecord traceRecord) {
+    public void print(TraceRecord traceRecord) throws UnsupportedEncodingException {
         long clock = traceRecord.getClock() / 1000l;
         writer.printf("{ \"type\":\"trace\", \"clock\" : %d, \"time\": %d", clock, traceRecord.getTime() / 1000000l);
         if (traceRecord.getAttrs() != null) {
@@ -60,10 +61,11 @@ public class TraceRecordOutputPrinter {
                 String className = symbolRegistry.symbolName(stack.getClassId());
                 String methodName = symbolRegistry.symbolName(stack.getMethodId());
                 String cause = className + "." + methodName + "(): line " + stack.getLineNum();
-                writer.printf(",\"exception\" : \"%s: %s\"", symbolRegistry.symbolName(exception.
-                        getClassId()), exception.getMessage() == null ? "" : exception.getMessage().
-                                replaceAll("\"", "'").replaceAll("[\n\r]", ""));
-                writer.printf(",\"cause\" : \"%s\"", cause);
+                writer.printf(",\"exception\" : \"%s\"", symbolRegistry.symbolName(exception.
+                        getClassId()));
+                writer.printf(",\"description\" : \"%s\"", exception.getMessage() == null ? "" : exception.getMessage().
+                        replaceAll("\"", "'").replaceAll("[\n\r]", ""));
+                writer.printf(",\"location\" : \"%s\"", cause);
             }
         }
         writer.printf(" }\n");

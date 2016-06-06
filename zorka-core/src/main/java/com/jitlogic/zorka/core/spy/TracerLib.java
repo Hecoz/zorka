@@ -26,7 +26,6 @@ import com.jitlogic.zorka.common.util.ZorkaLog;
 import com.jitlogic.zorka.common.util.ZorkaLogger;
 import com.jitlogic.zorka.core.integ.zabbix.ZabbixTraceOutput;
 import com.jitlogic.zorka.common.zico.ZicoTraceOutput;
-import com.jitlogic.zorka.core.integ.tcp.TcpFullTraceOutput;
 import com.jitlogic.zorka.core.integ.tcp.TcpTraceOutput;
 import com.jitlogic.zorka.core.spy.plugins.*;
 import com.jitlogic.zorka.core.util.OverlayClassLoader;
@@ -458,29 +457,6 @@ public class TracerLib {
         TcpTraceOutput output = new TcpTraceOutput(symbolRegistry, metricsRegistry, addr, port,
                 hostname, qlen, packetSize,
                 retries, retryTime, retryTimeExp, timeout, interval, performanceTargetPackage);
-        output.start();
-        return output;
-    }
-
-    /**
-     * Creates trace network sender. It will receive traces and send them to remote generic server.
-     *
-     * @param addr       collector host name or IP address
-     * @param port       collector port
-     * @param hostname   agent name - this will be presented in collector console;
-     * @param qlen
-     * @param packetSize
-     * @param interval
-     * @return
-     * @throws IOException
-     */
-    public ZorkaAsyncThread<SymbolicRecord> toTcpFull(String addr, int port, String hostname,
-            String auth,
-            int qlen, long packetSize, int retries, long retryTime, long retryTimeExp,
-            int timeout, int interval) throws IOException {
-        TraceWriter writer = new FressianTraceWriter(symbolRegistry, metricsRegistry);
-        TcpFullTraceOutput output = new TcpFullTraceOutput(writer, addr, port, hostname, auth, qlen,
-                packetSize, retries, retryTime, retryTimeExp, timeout, interval);
         output.start();
         return output;
     }
