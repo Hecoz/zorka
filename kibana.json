@@ -1,0 +1,269 @@
+[
+  {
+    "_id": "Memory",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Memory",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":8,\"id\":\"Used-Heap\",\"panelIndex\":1,\"row\":1,\"size_x\":4,\"size_y\":4,\"type\":\"visualization\"},{\"col\":4,\"id\":\"Used-Heap-(%)\",\"panelIndex\":2,\"row\":1,\"size_x\":4,\"size_y\":4,\"type\":\"visualization\"},{\"id\":\"Uptime\",\"type\":\"visualization\",\"panelIndex\":3,\"size_x\":3,\"size_y\":2,\"col\":1,\"row\":1}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{\"P-1\":{\"vis\":{\"legendOpen\":false},\"spy\":{\"mode\":{\"name\":null,\"fill\":false}}},\"P-2\":{\"vis\":{\"legendOpen\":false}},\"P-3\":{\"spy\":{\"mode\":{\"name\":null,\"fill\":false}}}}",
+      "version": 1,
+      "timeRestore": true,
+      "timeTo": "now",
+      "timeFrom": "now-15m",
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "Dashboard",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Dashboard",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":9,\"id\":\"Used-Heap\",\"panelIndex\":1,\"row\":1,\"size_x\":4,\"size_y\":4,\"type\":\"visualization\"},{\"col\":5,\"id\":\"Used-Heap-(%)\",\"panelIndex\":2,\"row\":1,\"size_x\":4,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Uptime\",\"panelIndex\":3,\"row\":1,\"size_x\":2,\"size_y\":2,\"type\":\"visualization\"},{\"col\":3,\"id\":\"Startup\",\"panelIndex\":7,\"row\":1,\"size_x\":2,\"size_y\":2,\"type\":\"visualization\"},{\"col\":1,\"id\":\"New-GC-Cpu\",\"panelIndex\":8,\"row\":3,\"size_x\":4,\"size_y\":3,\"type\":\"visualization\"},{\"col\":5,\"id\":\"Cpu\",\"panelIndex\":9,\"row\":5,\"size_x\":4,\"size_y\":4,\"type\":\"visualization\"},{\"col\":9,\"id\":\"All-Threads\",\"panelIndex\":10,\"row\":5,\"size_x\":4,\"size_y\":4,\"type\":\"visualization\"},{\"id\":\"Availability\",\"type\":\"visualization\",\"panelIndex\":11,\"size_x\":4,\"size_y\":3,\"col\":1,\"row\":6}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{\"P-1\":{\"spy\":{\"mode\":{\"fill\":false,\"name\":null}},\"vis\":{\"legendOpen\":false}},\"P-2\":{\"vis\":{\"legendOpen\":false}},\"P-3\":{\"spy\":{\"mode\":{\"fill\":false,\"name\":null}}},\"P-8\":{\"vis\":{\"legendOpen\":false}}}",
+      "version": 1,
+      "timeRestore": true,
+      "timeTo": "now",
+      "timeFrom": "now-30m",
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "Hot-Spots",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Hot Spots",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":1,\"id\":\"Url-Hotspots\",\"panelIndex\":1,\"row\":1,\"size_x\":12,\"size_y\":3,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Method-Hotspots\",\"panelIndex\":2,\"row\":7,\"size_x\":12,\"size_y\":3,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Sql-Hotspots\",\"panelIndex\":3,\"row\":10,\"size_x\":12,\"size_y\":3,\"type\":\"visualization\"},{\"id\":\"Exception-Hotspots\",\"type\":\"visualization\",\"panelIndex\":5,\"size_x\":12,\"size_y\":3,\"col\":1,\"row\":4}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{\"P-3\":{\"spy\":{\"mode\":{\"fill\":false,\"name\":null}}}}",
+      "version": 1,
+      "timeRestore": true,
+      "timeTo": "now",
+      "timeFrom": "now-15m",
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "Used-Heap",
+    "_type": "visualization",
+    "_source": {
+      "title": "Used Heap",
+      "visState": "{\"title\":\"Used Heap\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":true,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"square root\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"int1\",\"customLabel\":\"Used Heap (b)\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"Timestamp\"}},{\"id\":\"4\",\"type\":\"filters\",\"schema\":\"group\",\"params\":{\"filters\":[{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw:\\\"Used Heap\\\"\",\"analyze_wildcard\":true}}},\"label\":\"Used\"},{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw:\\\"Max Heap\\\"\",\"analyze_wildcard\":true}}},\"label\":\"Max\"}]}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw:\\\"Used Heap\\\" OR type.raw:\\\"Max Heap\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Daemon-Threads",
+    "_type": "visualization",
+    "_source": {
+      "title": "Daemon Threads",
+      "visState": "{\"title\":\"New Visualization\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":true,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"int1\",\"customLabel\":\"Daemon Threads\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"Timestamp\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type=\\\"Daemon Threads\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Used-Heap-(%)",
+    "_type": "visualization",
+    "_source": {
+      "title": "Used Heap (%)",
+      "visState": "{\"title\":\"Used Heap (%)\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":true,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"float1\",\"customLabel\":\"Used Heap (%)\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"Timestamp\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw:\\\"Used Heap(%)\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Threads",
+    "_type": "visualization",
+    "_source": {
+      "title": "Threads",
+      "visState": "{\"title\":\"New Visualization\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":true,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"int1\",\"customLabel\":\"Threads\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"Timestamp\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type=\\\"Threads\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Startup",
+    "_type": "visualization",
+    "_source": {
+      "title": "Startup",
+      "visState": "{\"title\":\"Startups\",\"type\":\"table\",\"params\":{\"perPage\":1,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Pings\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"value.raw\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Timestamp\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type=\\\"Start Time\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Uptime",
+    "_type": "visualization",
+    "_source": {
+      "title": "Uptime",
+      "visState": "{\"aggs\":[{\"id\":\"1\",\"params\":{\"customLabel\":\"Uptime (hours)\",\"field\":\"float1\"},\"schema\":\"metric\",\"type\":\"max\"}],\"listeners\":{},\"params\":{\"fontSize\":\"40\",\"handleNoResults\":true},\"title\":\"Uptime\",\"type\":\"metric\"}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Uptime\\\" AND @timestamp:[now-90s TO now]\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Cpu",
+    "_type": "visualization",
+    "_source": {
+      "title": "Cpu",
+      "visState": "{\"title\":\"Process Cpu\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":true,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":true,\"yAxis\":{\"max\":1,\"min\":0}},\"aggs\":[{\"id\":\"1\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"float1\",\"customLabel\":\"Cpu\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"Timestamp\"}},{\"id\":\"3\",\"type\":\"filters\",\"schema\":\"group\",\"params\":{\"filters\":[{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Process Cpu\\\"\",\"analyze_wildcard\":true}}},\"label\":\"Process Cpu\"},{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"System Cpu\\\"\",\"analyze_wildcard\":true}}},\"label\":\"System Cpu\"}]}}],\"listeners\":{}}",
+      "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Process Cpu\\\" OR type.raw=\\\"System Cpu\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "All-Threads",
+    "_type": "visualization",
+    "_source": {
+      "title": "All Threads",
+      "visState": "{\"title\":\"All Threads\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":true,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"int1\",\"customLabel\":\"Threads\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"Timestamp\"}},{\"id\":\"3\",\"type\":\"filters\",\"schema\":\"group\",\"params\":{\"filters\":[{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Threads\\\"\",\"analyze_wildcard\":true}}},\"label\":\"Threads\"},{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Daemon Threads\\\"\",\"analyze_wildcard\":true}}},\"label\":\"Daemon Threads\"}]}}],\"listeners\":{}}",
+      "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Threads\\\" OR type.raw=\\\"Daemon Threads\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "New-GC-Cpu",
+    "_type": "visualization",
+    "_source": {
+      "title": "New GC Cpu",
+      "visState": "{\"title\":\"New Visualization\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":true,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"int1\",\"customLabel\":\"New GC Cpu\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"Timestamp\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type=\\\"GC New Cpu\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Availability",
+    "_type": "visualization",
+    "_source": {
+      "title": "Availability",
+      "visState": "{\"title\":\"Availability\",\"type\":\"histogram\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"scale\":\"linear\",\"mode\":\"stacked\",\"times\":[],\"addTimeMarker\":true,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Ping\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"custom\",\"customInterval\":\"2m\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
+      "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type=\\\"Start Time\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Url-Hotspots",
+    "_type": "visualization",
+    "_source": {
+      "title": "Url Hotspots",
+      "visState": "{\"title\":\"Url Hotspots\",\"type\":\"table\",\"params\":{\"perPage\":5,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"avg\",\"schema\":\"metric\",\"params\":{\"field\":\"time\",\"customLabel\":\"Average Time (ms)\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"uri.raw\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Url\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type=\\\"trace\\\" AND _exists_: uri\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Exception-Hotspot",
+    "_type": "visualization",
+    "_source": {
+      "title": "Exception Hotspot",
+      "visState": "{\"title\":\"Exception Hotspot\",\"type\":\"table\",\"params\":{\"perPage\":5,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"exception.raw\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Exception\"}},{\"id\":\"4\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"description.raw\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Description\"}},{\"id\":\"3\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"location.raw\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Location\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"type.raw=\\\"trace\\\" AND _exists_:exception\"}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Method-Hotspots",
+    "_type": "visualization",
+    "_source": {
+      "title": "Method Hotspots",
+      "visState": "{\"title\":\"Method Hotspots\",\"type\":\"table\",\"params\":{\"perPage\":5,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"avg\",\"schema\":\"metric\",\"params\":{\"field\":\"time\",\"customLabel\":\"Average Time (ms)\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"method.raw\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Method\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type=\\\"perf\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Sql-Hotspots",
+    "_type": "visualization",
+    "_source": {
+      "title": "Sql Hotspots",
+      "visState": "{\"title\":\"Sql Hotspots\",\"type\":\"table\",\"params\":{\"perPage\":5,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"avg\",\"schema\":\"metric\",\"params\":{\"field\":\"time\",\"customLabel\":\"Average Time (ms)\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"sql.raw\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Sql\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type=\\\"trace\\\" AND _exists_ : sql\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Exception-Hotspots",
+    "_type": "visualization",
+    "_source": {
+      "title": "Exception Hotspots",
+      "visState": "{\"title\":\"Exception Hotspot\",\"type\":\"table\",\"params\":{\"perPage\":5,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"exception.raw\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Exception\"}},{\"id\":\"4\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"description.raw\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Description\"}},{\"id\":\"3\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"location.raw\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Location\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"type.raw=\\\"trace\\\" AND _exists_:exception\"}},\"filter\":[]}"
+      }
+    }
+  }
+]
