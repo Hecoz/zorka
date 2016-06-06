@@ -44,7 +44,8 @@ public class TraceRecordOutputPrinter {
 
     public void print(TraceRecord traceRecord) throws UnsupportedEncodingException {
         long clock = traceRecord.getClock() / 1000l;
-        writer.printf("{ \"type\":\"trace\", \"clock\" : %d, \"time\": %d", clock, traceRecord.getTime() / 1000000l);
+        writer.printf("{ \"type\":\"trace\", \"clock\" : %d, \"time\": %d", clock, traceRecord.
+                getTime() / 1000000l);
         if (traceRecord.getAttrs() != null) {
             for (Map.Entry<Integer, Object> entry : traceRecord.getAttrs().entrySet()) {
                 String attr = symbolRegistry.symbolName(entry.getKey()).toLowerCase();
@@ -54,8 +55,12 @@ public class TraceRecordOutputPrinter {
         }
 
         if (traceRecord.getErrors() > 0) {
-            getExceptionCause(traceRecord);
+            getException(traceRecord);
             if (exception != null) {
+                //get root cause
+                while (exception.getCause() != null) {
+                    exception = exception.getCause();
+                }
                 SymbolicStackElement stack
                         = exception.getStackTrace()[0];
                 String className = symbolRegistry.symbolName(stack.getClassId());
@@ -63,7 +68,8 @@ public class TraceRecordOutputPrinter {
                 String cause = className + "." + methodName + "(): line " + stack.getLineNum();
                 writer.printf(",\"exception\" : \"%s\"", symbolRegistry.symbolName(exception.
                         getClassId()));
-                writer.printf(",\"description\" : \"%s\"", exception.getMessage() == null ? "" : exception.getMessage().
+                writer.printf(",\"description\" : \"%s\"", exception.getMessage() == null ? ""
+                        : exception.getMessage().
                         replaceAll("\"", "'").replaceAll("[\n\r]", ""));
                 writer.printf(",\"location\" : \"%s\"", cause);
             }
@@ -75,15 +81,13 @@ public class TraceRecordOutputPrinter {
         }
     }
 
-    public void getExceptionCause(TraceRecord traceRecord) {
+    public void getException(TraceRecord traceRecord) {
         if (traceRecord.getException() != null) {
             exception = (SymbolicException) traceRecord.getException();
-            while (exception.getCause() != null) {
-                exception = exception.getCause();
-            }
-        } else if (traceRecord.getChildren() != null) {
+        }
+        if (traceRecord.getChildren() != null) {
             for (TraceRecord child : traceRecord.getChildren()) {
-                getExceptionCause(child);
+                getException(child);
             }
         }
     }
@@ -93,8 +97,9 @@ public class TraceRecordOutputPrinter {
         if (klass != null && klass.startsWith(performanceTargetPackage)) {
             String method = symbolRegistry.symbolName(traceRecord.getMethodId());
             long time = traceRecord.getTime() / 1000000l;
-            writer.printf("{ \"type\":\"perf\", \"method\": \"%s.%s()\",\"time\":%d}\n", klass.substring(
-                    performanceTargetPackageCropIndex), method, time);
+            writer.printf("{ \"type\":\"perf\", \"method\": \"%s.%s()\",\"time\":%d}\n", klass.
+                    substring(
+                            performanceTargetPackageCropIndex), method, time);
         }
         if (traceRecord.getChildren() != null) {
             for (TraceRecord child : traceRecord.getChildren()) {
