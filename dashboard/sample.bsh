@@ -1,0 +1,79 @@
+/**
+ * Copyright 2012-2015 Rafal Lewczuk <rafal.lewczuk@jitlogic.com>
+ *
+ * ZORKA is free software. You can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * ZORKA is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * ZORKA. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+
+// This is sample script intended to help understanding how to implement agent extensions.
+
+// In order to enable this script, add it to list of loaded scripts in zorka.properties:
+// scripts = jvm.bsh, zabbix.bsh, sample.bsh
+
+// Functions defined in this script can be called using zabbix_get tool, for example:
+// zabbix_get -s 127.0.0.1 -p 10055 -k 'sample.util[]'
+// zabbix_get -s 127.0.0.1 -p 10055 -k 'sample.sample_util["PS Eden Space"]'
+
+
+// Call zorka.require(...) to load additional scripts that this one depends on.
+zorka.require("jvm.bsh");
+
+
+// BeanShall has no notion of namespaces, so we simulate namespace using function
+// that returns reference to its own instance and then defining variable that
+// holds instance of this function.
+
+__sample() {
+
+    millis_to_date_string(millis) {
+      return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date(millis));
+    }
+    
+    milis_to_hours(millis) {
+      return ((float)millis) / (1000.0*60.0*60.0);
+    }
+    
+    nagios.defcmd("GcScavenge", nagios.jmxscan(
+      zorka.query("java", "java.lang:name=PS Scavenge,type=GarbageCollector").get("CollectionTime")
+        .metric(perfmon.timedDelta("LVAL1", "GC CPU time", "%CPU").divide(10))
+      ).withPerfLine("${LVAL0}"));
+
+    nagios.defcmd("GcMarkSweep", nagios.jmxscan(
+      zorka.query("java", "java.lang:name=PS MarkSweep,type=GarbageCollector").get("CollectionTime")
+        .metric(perfmon.timedDelta("LVAL1", "GC CPU time", "%CPU").divide(10))
+      ).withPerfLine("${LVAL0}"));
+  
+    nagios.defcmd("GcConcurrentMarkSweep", nagios.jmxscan(
+      zorka.query("java", "java.lang:name=ConcurrentMarkSweep,type=GarbageCollector").get("CollectionTime")
+        .metric(perfmon.timedDelta("LVAL1", "GC CPU time", "%CPU").divide(10))
+      ).withPerfLine("${LVAL0}"));
+       
+    nagios.defcmd("GcMarkSweepCompact", nagios.jmxscan(
+      zorka.query("java", "java.lang:name=MarkSweepCompact,type=GarbageCollector").get("CollectionTime")
+        .metric(perfmon.timedDelta("LVAL1", "GC CPU time", "%CPU").divide(10))
+      ).withPerfLine("${LVAL0}"));
+       
+    nagios.defcmd("GcG1", nagios.jmxscan(
+      zorka.query("java", "java.lang:name=G1 Old Generation,type=GarbageCollector").get("CollectionTime")
+        .metric(perfmon.timedDelta("LVAL1", "GC CPU time", "%CPU").divide(10))
+      ).withPerfLine("${LVAL0}"));
+       
+    return this;
+}
+
+// Instantiate namespace here
+sample = __sample();
+
+ 
