@@ -1,18 +1,16 @@
 /**
  * Copyright 2012-2015 Rafal Lewczuk <rafal.lewczuk@jitlogic.com>
  * <p/>
- * This is free software. You can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * This is free software. You can redistribute it and/or modify it under the terms of the GNU
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * <p/>
- * This software is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  * <p/>
- * You should have received a copy of the GNU General Public License along with
- * this software. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this software. If
+ * not, see <http://www.gnu.org/licenses/>.
  */
 package com.jitlogic.zorka.core.integ.tcp;
 
@@ -36,12 +34,13 @@ import com.jitlogic.zorka.common.util.ZorkaLogger;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Tracer output sending data to remote ZICO collector. It automatically handles
- * reconnections and retransmissions, lumps data into bigger packets for better
- * throughput, keeps track of symbols already sent etc.
+ * Tracer output sending data to remote ZICO collector. It automatically handles reconnections and
+ * retransmissions, lumps data into bigger packets for better throughput, keeps track of symbols
+ * already sent etc.
  *
  * @author rafal.lewczuk@jitlogic.com
  */
@@ -95,15 +94,14 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
      * @param metricsRegistry
      * @param symbolRegistry
      *
-     * @param addr host name or IP address of remote ZICO collector
-     * @param port port number of remote ZICO collector
-     * @param hostname name this client will advertise itself when connecting to
-     * ZICO collector
-     * @param qlen output queue length
-     * @param packetSize maximum (recommended) packet size (actual packets might
-     * exceed this a bit)
-     * @throws IOException when connection to remote server cannot be
-     * established;
+     * @param addr            host name or IP address of remote ZICO collector
+     * @param port            port number of remote ZICO collector
+     * @param hostname        name this client will advertise itself when connecting to ZICO
+     *                        collector
+     * @param qlen            output queue length
+     * @param packetSize      maximum (recommended) packet size (actual packets might exceed this a
+     *                        bit)
+     * @throws IOException when connection to remote server cannot be established;
      */
     public TcpTraceOutput(
             SymbolRegistry symbolRegistry, MetricsRegistry metricsRegistry, String addr, int port,
@@ -177,7 +175,8 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
                 socket = new Socket(serverAddr, serverPort);
 
                 OutputStream out = socket.getOutputStream();
-                PrintWriter writer = new PrintWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
+                PrintWriter writer = new PrintWriter(new OutputStreamWriter(out,
+                        StandardCharsets.UTF_8));
                 for (SymbolicRecord symbolicRecord : packet) {
                     printRecord(writer, symbolicRecord);
                 }
@@ -223,28 +222,27 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
                 "Too many errors while trying to send trace. Giving up. Trace will be lost.");
     }
 
-    private void printRecord(PrintWriter writer, SymbolicRecord rec) throws UnsupportedEncodingException {
-        if (rec instanceof MethodCallCounterRecord) {
-            System.out.println(rec);
-        } else if (rec instanceof PerfRecord) {
-            //list = perfRecordToData(rec);
-            System.out.println(rec);
-        } else if (rec instanceof SymbolicException) {
-            System.out.println(rec);
-        } else if (rec instanceof SymbolicStackElement) {
-            System.out.println(rec);
-        } else if (rec instanceof TraceMarker) {
-            System.out.println(rec);
-        } else if (rec instanceof TraceRecord) {
-            new TraceRecordOutputPrinter(hostname, symbolRegistry, writer, performanceTargetPackage).print(
-                    (TraceRecord) rec);
+    private void printRecord(PrintWriter writer, SymbolicRecord rec) throws CharacterCodingException  {
+//        if (rec instanceof MethodCallCounterRecord) {
+//            
+//        } else if (rec instanceof PerfRecord) {
+//            
+//        } else if (rec instanceof SymbolicException) {
+//            
+//        } else if (rec instanceof SymbolicStackElement) {
+//            
+//        } else if (rec instanceof TraceMarker) {
+//            
+//        } else 
+        if (rec instanceof TraceRecord) {
+            new TraceRecordOutputPrinter(hostname, symbolRegistry, writer, performanceTargetPackage).
+                    print((TraceRecord) rec);
         }
     }
 
     private ArrayList<ActiveCheckResult> recToData(SymbolicRecord rec) {
         /**
-         * * Data *** String host; String key; String value; int lastlogsize;
-         * long clock;
+         * * Data *** String host; String key; String value; int lastlogsize; long clock;
          */
         ArrayList<ActiveCheckResult> list = null;
 
@@ -270,8 +268,8 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
     }
 
     /**
-     * * PerfRecord : long clock, int scannerId, List<PerfSample> samples [
-     * Metric metricId, Number value]
+     * * PerfRecord : long clock, int scannerId, List<PerfSample> samples [ Metric metricId, Number
+     * value]
      */
     private ArrayList<ActiveCheckResult> perfRecordToData(SymbolicRecord rec) {
         log.debug(ZorkaLogger.ZAG_DEBUG, "### perfRecordToData");
@@ -299,9 +297,8 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
     }
 
     /**
-     * TraceRecord : int classId, int methodId, int signatureId, int flags, long
-     * time, long calls, long errors, TraceMarker marker, Object exception,
-     * TraceRecord parent, Map<Integer, Object>
+     * TraceRecord : int classId, int methodId, int signatureId, int flags, long time, long calls,
+     * long errors, TraceMarker marker, Object exception, TraceRecord parent, Map<Integer, Object>
      * attrs, List<TraceRecord> children
      */
     private ArrayList<ActiveCheckResult> traceRecordToData(SymbolicRecord rec, String prefix,

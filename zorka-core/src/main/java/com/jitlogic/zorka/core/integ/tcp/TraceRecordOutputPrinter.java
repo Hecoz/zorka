@@ -10,7 +10,7 @@ import com.jitlogic.zorka.common.tracedata.SymbolicException;
 import com.jitlogic.zorka.common.tracedata.SymbolicStackElement;
 import com.jitlogic.zorka.common.tracedata.TraceRecord;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.CharacterCodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,15 +45,20 @@ public class TraceRecordOutputPrinter {
                 : performanceTargetPackage.length() + 1;
     }
 
-    public void print(TraceRecord traceRecord) throws UnsupportedEncodingException {
+    public void print(TraceRecord traceRecord) throws CharacterCodingException {
         long clock = traceRecord.getClock() / 1000l;
         writer.printf("{ \"app\":\"%s\", \"type\":\"trace\", \"clock\" : %d, \"time\": %d", app,
                 clock, traceRecord.getTime() / 1000000l);
         if (traceRecord.getAttrs() != null) {
             for (Map.Entry<Integer, Object> entry : traceRecord.getAttrs().entrySet()) {
-                String attr = symbolRegistry.symbolName(entry.getKey()).toLowerCase();
-                writer.printf(",\"%s\":\"%s\"", attr, entry.getValue() == null ? "null" : entry.
-                        getValue().toString().replaceAll("\"", "'").replaceAll("[\n\r]", ""));
+                String attr = symbolRegistry.symbolName(entry.getKey()).toLowerCase().replace('.',
+                        '_');
+                String value = TcpUtils.removeInvalidCharacters(entry.getValue());
+                if (value.length() > 200) {
+                    writer.printf(",\"trunc\":\"%s\", ", TcpUtils.ellipsize(value, 200));
+                }
+                writer.printf(",\"%s\":\"%s\"", attr, value);
+
             }
         }
 
