@@ -321,11 +321,11 @@ public class NagiosJmxCommand extends AbstractNagiosCommand {
     
     @Override
     public NrpePacket cmd(Object... args) {
-        return runSimpleScan(System.currentTimeMillis());
+        return runScan(System.currentTimeMillis());
     }
     
     public NrpePacket cmdSimple(Object... args) {
-        return runScan(System.currentTimeMillis());
+        return runSimpleScan(System.currentTimeMillis());
     }
 
 }
