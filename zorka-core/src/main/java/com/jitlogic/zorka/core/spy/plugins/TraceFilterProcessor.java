@@ -61,6 +61,8 @@ public class TraceFilterProcessor implements SpyProcessor {
             tracer.getHandler().markTraceFlags(0, rslt ? TraceMarker.SUBMIT_TRACE : TraceMarker.DROP_TRACE);
         }
 
+        UriStore.clear();
+        
         return record;
     }
 

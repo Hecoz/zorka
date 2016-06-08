@@ -81,7 +81,7 @@ __catalina() {
 
   spy.add(spy.instrument("CATALINA_HTTP")
     .onEnter(spy.fetchArg("REQ", 1), spy.fetchArg("RESP", 2),
-      spy.format("URI", "${REQ.request.requestURI}"),
+      spy.format("URI", "${REQ.request.method} ${REQ.request.requestURI}"),
       http._trace ? spy.subchain(
         http._uriQualifier,
         tracer.begin("HTTP", zorka.longCfg("http.trace.time")),

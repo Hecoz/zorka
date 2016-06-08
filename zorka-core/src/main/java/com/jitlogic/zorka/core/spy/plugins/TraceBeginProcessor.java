@@ -1,19 +1,17 @@
 /**
  * Copyright 2012-2015 Rafal Lewczuk <rafal.lewczuk@jitlogic.com>
  * <p/>
- * This is free software. You can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * This is free software. You can redistribute it and/or modify it under the terms of the GNU
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * <p/>
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  * <p/>
- * You should have received a copy of the GNU General Public License
- * along with this software. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this software. If
+ * not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.jitlogic.zorka.core.spy.plugins;
 
 import com.jitlogic.zorka.common.tracedata.SymbolRegistry;
@@ -31,12 +29,10 @@ import java.util.Map;
  */
 public class TraceBeginProcessor implements SpyProcessor {
 
-
     /**
      * Tracer object.
      */
     private Tracer tracer;
-
 
     /**
      * Trace name symbol ID.
@@ -50,12 +46,10 @@ public class TraceBeginProcessor implements SpyProcessor {
      */
     private long minimumTraceTime;
 
-
     /**
      * Flags set in trace marker.
      */
     private int flags;
-
 
     /**
      * Creates new trace begin marking processsor.
@@ -64,7 +58,8 @@ public class TraceBeginProcessor implements SpyProcessor {
      * @param traceName        trace name (or format string)
      * @param minimumTraceTime minimum trace execution time
      */
-    public TraceBeginProcessor(Tracer tracer, String traceName, long minimumTraceTime, int flags, SymbolRegistry symbolRegistry) {
+    public TraceBeginProcessor(Tracer tracer, String traceName, long minimumTraceTime, int flags,
+            SymbolRegistry symbolRegistry) {
         this.tracer = tracer;
         this.traceName = traceName;
         this.symbolRegistry = symbolRegistry;
@@ -74,7 +69,16 @@ public class TraceBeginProcessor implements SpyProcessor {
 
     @Override
     public Map<String, Object> process(Map<String, Object> record) {
+
+        if (record.containsKey("URI")) {
+            UriStore.set(record.get("URI").toString());
+        } else {
+            String uri = UriStore.get();
+            record.put("URI", uri == null ? "" : uri);
+        }
+
         TraceBuilder traceBuilder = tracer.getHandler();
+
         int traceId = symbolRegistry.symbolId(ObjectInspector.substitute(traceName, record));
         traceBuilder.traceBegin(traceId, System.currentTimeMillis(), flags);
 

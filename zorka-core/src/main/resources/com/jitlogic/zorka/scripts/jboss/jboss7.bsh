@@ -274,7 +274,8 @@ __jboss7() {
           spy.fetchArg("MDESC", 2), spy.fetchArg("ARGS", 3),
           ejb._trace ? tracer.begin("EJB", zorka.longCfg("ejb.trace.time")) : null,
           ejb._trace ? tracer.formatAttr("METHOD", "${MDESC.name}") : null,
-          ejb._trace ? tracer.formatAttr("CLASS", "${MDESC.declaringClass.name}") : null)
+          ejb._trace ? tracer.formatAttr("CLASS", "${MDESC.declaringClass.name}") : null,
+          ejb._trace ? tracer.attr("URI", "URI") : null)
       .onError(
           ejb._trace ? tracer.flags(tracer.SUBMIT_TRACE) : null,
           spy.fetchError("ERR"),

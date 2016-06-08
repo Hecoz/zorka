@@ -14,7 +14,6 @@
  */
 package com.jitlogic.zorka.core.integ.tcp;
 
-import com.jitlogic.zorka.core.integ.zabbix.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,7 +22,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.jitlogic.zorka.common.stats.AgentDiagnostics;
@@ -33,7 +31,6 @@ import com.jitlogic.zorka.common.util.ZorkaLog;
 import com.jitlogic.zorka.common.util.ZorkaLogger;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 
@@ -89,6 +86,11 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
     private String performanceTargetPackage;
 
     /**
+     * Maximum length for json large fields
+     */
+    private int maxStringLength;
+
+    /**
      * Creates trace output object.
      *
      * @param metricsRegistry
@@ -107,7 +109,8 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
             SymbolRegistry symbolRegistry, MetricsRegistry metricsRegistry, String addr, int port,
             String hostname,
             int qlen, int packetSize, int retries, long retryTime, long retryTimeExp,
-            int timeout, int interval, String performanceTargetPackage) throws IOException {
+            int timeout, int interval, String performanceTargetPackage, int maxStringLength) throws
+            IOException {
 
         super("tcp-output", qlen, packetSize, interval);
 
@@ -131,6 +134,7 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
         this.retryTimeExp = retryTimeExp;
 
         this.performanceTargetPackage = performanceTargetPackage;
+        this.maxStringLength = maxStringLength;
 
         /* compatibility purposes */
         this.os = new ByteArrayOutputStream();
@@ -222,164 +226,11 @@ public class TcpTraceOutput extends ZorkaAsyncThread<SymbolicRecord> implements 
                 "Too many errors while trying to send trace. Giving up. Trace will be lost.");
     }
 
-    private void printRecord(PrintWriter writer, SymbolicRecord rec) throws CharacterCodingException  {
-//        if (rec instanceof MethodCallCounterRecord) {
-//            
-//        } else if (rec instanceof PerfRecord) {
-//            
-//        } else if (rec instanceof SymbolicException) {
-//            
-//        } else if (rec instanceof SymbolicStackElement) {
-//            
-//        } else if (rec instanceof TraceMarker) {
-//            
-//        } else 
+    private void printRecord(PrintWriter writer, SymbolicRecord rec) throws CharacterCodingException {
         if (rec instanceof TraceRecord) {
-            new TraceRecordOutputPrinter(hostname, symbolRegistry, writer, performanceTargetPackage).
-                    print((TraceRecord) rec);
+            new TraceRecordOutputPrinter(hostname, symbolRegistry, writer, performanceTargetPackage,
+                    maxStringLength).print((TraceRecord) rec);
         }
-    }
-
-    private ArrayList<ActiveCheckResult> recToData(SymbolicRecord rec) {
-        /**
-         * * Data *** String host; String key; String value; int lastlogsize; long clock;
-         */
-        ArrayList<ActiveCheckResult> list = null;
-
-        if (rec instanceof MethodCallCounterRecord) {
-            // TODO Auto-generated method stub
-        } else if (rec instanceof PerfRecord) {
-            list = perfRecordToData(rec);
-        } else if (rec instanceof SymbolicException) {
-            // TODO Auto-generated method stub
-        } else if (rec instanceof SymbolicStackElement) {
-            // TODO Auto-generated method stub
-        } else if (rec instanceof TraceMarker) {
-            // TODO Auto-generated method stub
-        } else if (rec instanceof TraceRecord) {
-            list = traceRecordToData(rec, "", 0);
-        }
-
-        for (ActiveCheckResult result : list) {
-            log.debug(ZorkaLogger.ZAG_DEBUG, "### Data: " + result.toString());
-        }
-
-        return list;
-    }
-
-    /**
-     * * PerfRecord : long clock, int scannerId, List<PerfSample> samples [ Metric metricId, Number
-     * value]
-     */
-    private ArrayList<ActiveCheckResult> perfRecordToData(SymbolicRecord rec) {
-        log.debug(ZorkaLogger.ZAG_DEBUG, "### perfRecordToData");
-
-        ArrayList<ActiveCheckResult> list = new ArrayList<ActiveCheckResult>();
-
-        ActiveCheckResult result;
-        PerfRecord perfRecord = (PerfRecord) rec;
-
-        long clock = perfRecord.getClock();
-
-        for (PerfSample sample : perfRecord.getSamples()) {
-            result = new ActiveCheckResult();
-
-            result.setHost(hostname);
-            result.setKey(sample.getMetric().getDescription());
-            result.setValue(String.valueOf(sample.getValue()));
-            result.setLastlogsize(0);
-            result.setClock(clock);
-
-            list.add(result);
-        }
-
-        return list;
-    }
-
-    /**
-     * TraceRecord : int classId, int methodId, int signatureId, int flags, long time, long calls,
-     * long errors, TraceMarker marker, Object exception, TraceRecord parent, Map<Integer, Object>
-     * attrs, List<TraceRecord> children
-     */
-    private ArrayList<ActiveCheckResult> traceRecordToData(SymbolicRecord rec, String prefix,
-            int level) {
-        log.debug(ZorkaLogger.ZAG_DEBUG, "### traceRecordToData");
-
-        ArrayList<ActiveCheckResult> list = new ArrayList<ActiveCheckResult>();
-        ActiveCheckResult result;
-        String keySuffix = null;
-        TraceRecord traceRecord = (TraceRecord) rec;
-        long clock = traceRecord.getClock() / 1000l;
-
-        /* Finding Record's key */
-        if (traceRecord.getAttrs() != null) {
-            for (Map.Entry<Integer, Object> entry : traceRecord.getAttrs().entrySet()) {
-                String attrName = symbolRegistry.symbolName(entry.getKey());
-
-                if (attrName.equals("URI")) {
-                    keySuffix = "frontends." + String.valueOf(entry.getValue());
-                }
-            }
-        }
-
-        if (keySuffix == null) {
-            String className = symbolRegistry.symbolName(traceRecord.getClassId()).replace(".", "_");
-            String methodName = symbolRegistry.symbolName(traceRecord.getMethodId()).replace(".",
-                    "_");
-            keySuffix = className + "_" + methodName;
-        }
-
-        String key;
-        if (prefix == null || prefix.length() == 0) {
-            key = keySuffix;
-        } else {
-            key = prefix + "." + keySuffix;
-        }
-        log.debug(ZorkaLogger.ZAG_DEBUG, "### traceRecordToData: key=" + key);
-
-        /* Time */
-        result = new ActiveCheckResult();
-        result.setHost(hostname);
-        result.setKey(key + ".time");
-        /* nanoseconds -> milliseconds */
-        result.setValue(String.valueOf(traceRecord.getTime() / 1000000l));
-        result.setLastlogsize(0);
-        result.setClock(clock);
-        list.add(result);
-        log.debug(ZorkaLogger.ZAG_DEBUG, "### traceRecordToData: data=" + result.toString());
-
-        /* Calls */
-        result = new ActiveCheckResult();
-        result.setHost(hostname);
-        result.setKey(key + ".calls");
-        /* contar a chamada atual como 1 */
-        result.setValue("1");
-        result.setLastlogsize(0);
-        result.setClock(clock);
-        list.add(result);
-        log.debug(ZorkaLogger.ZAG_DEBUG, "### traceRecordToData: data=" + result.toString());
-
-        /* Errors */
-        result = new ActiveCheckResult();
-        result.setHost(hostname);
-        result.setKey(key + ".errors");
-        result.setValue(String.valueOf(traceRecord.getErrors()));
-        result.setLastlogsize(0);
-        result.setClock(clock);
-        list.add(result);
-        log.debug(ZorkaLogger.ZAG_DEBUG, "### traceRecordToData: data=" + result.toString());
-
-        /* Recursive check children */
-        if ((level <= 1) && (traceRecord.getChildren() != null)) {
-            log.debug(ZorkaLogger.ZAG_DEBUG, "### traceRecordToData: children.size()="
-                    + traceRecord.getChildren().size());
-            for (TraceRecord child : traceRecord.getChildren()) {
-                log.debug(ZorkaLogger.ZAG_DEBUG, "### traceRecordToData: child=" + child.toString());
-                list.addAll(traceRecordToData(child, key + ".backends", level + 1));
-            }
-        }
-
-        return list;
     }
 
     @Override

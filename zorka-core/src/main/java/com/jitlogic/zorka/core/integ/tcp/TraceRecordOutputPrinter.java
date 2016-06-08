@@ -11,8 +11,6 @@ import com.jitlogic.zorka.common.tracedata.SymbolicStackElement;
 import com.jitlogic.zorka.common.tracedata.TraceRecord;
 import java.io.PrintWriter;
 import java.nio.charset.CharacterCodingException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,37 +25,39 @@ public class TraceRecordOutputPrinter {
 
     private final PrintWriter writer;
 
-    private final String performanceTargetPackage;
-
-    private final int performanceTargetPackageCropIndex;
+//    private final String performanceTargetPackage;
+//
+//    private final int performanceTargetPackageCropIndex;
 
     private SymbolicException exception;
 
-    private List<MethodPerfCounter> performance = new ArrayList<MethodPerfCounter>();
+    private final int maxFieldLength;
 
     public TraceRecordOutputPrinter(String app, SymbolRegistry symbolRegistry, PrintWriter writer,
-            String performanceTargetPackage) {
+            String performanceTargetPackage, int maxFieldLength) {
         this.app = app;
         this.symbolRegistry = symbolRegistry;
         this.writer = writer;
-        this.performanceTargetPackage = performanceTargetPackage;
-        this.performanceTargetPackageCropIndex = performanceTargetPackage == null ? 0
-                : performanceTargetPackage.length() + 1;
+//        this.performanceTargetPackage = performanceTargetPackage;
+//        this.performanceTargetPackageCropIndex = performanceTargetPackage == null ? 0
+//                : performanceTargetPackage.length() + 1;
+        this.maxFieldLength = maxFieldLength;
     }
 
     public void print(TraceRecord traceRecord) throws CharacterCodingException {
         long clock = traceRecord.getClock() / 1000l;
-        writer.printf("{ \"app\":\"%s\", \"type\":\"trace\", \"clock\" : %d, \"time\": %d", app,
-                clock, traceRecord.getTime() / 1000000l);
+        writer.printf("{ \"app\":\"%s\", \"type\":\"%s\", \"clock\" : %d, \"time\": %d", app,
+               symbolRegistry.symbolName(traceRecord.getTraceId()), clock, traceRecord.getTime() / 1000000l);
         if (traceRecord.getAttrs() != null) {
             for (Map.Entry<Integer, Object> entry : traceRecord.getAttrs().entrySet()) {
                 String attr = symbolRegistry.symbolName(entry.getKey()).toLowerCase().replace('.',
                         '_');
                 String value = TcpUtils.removeInvalidCharacters(entry.getValue());
-                if (value.length() > 200) {
-                    writer.printf(",\"trunc\":\"%s\", ", TcpUtils.ellipsize(value, 200));
+                if (value.length() > maxFieldLength) {
+                    writer.printf(",\"%s\":\"%s\" ", attr, TcpUtils.ellipsize(value, maxFieldLength));
+                } else {
+                    writer.printf(",\"%s\":\"%s\"", attr, value);
                 }
-                writer.printf(",\"%s\":\"%s\"", attr, value);
 
             }
         }
@@ -84,9 +84,9 @@ public class TraceRecordOutputPrinter {
         }
         writer.printf(" }\n");
 
-        if (performanceTargetPackage != null && performanceTargetPackage.length() > 0) {
-            printStatistics(traceRecord);
-        }
+//        if (performanceTargetPackage != null && performanceTargetPackage.length() > 0) {
+//            printStatistics(traceRecord);
+//        }
     }
 
     public void getException(TraceRecord traceRecord) {
@@ -100,19 +100,20 @@ public class TraceRecordOutputPrinter {
         }
     }
 
-    public void printStatistics(TraceRecord traceRecord) {
-        String klass = symbolRegistry.symbolName(traceRecord.getClassId());
-        if (klass != null && klass.startsWith(performanceTargetPackage)) {
-            String method = symbolRegistry.symbolName(traceRecord.getMethodId());
-            long time = traceRecord.getTime() / 1000000l;
-            writer.printf(
-                    "{ \"app\":\"%s\", \"type\":\"perf\", \"method\": \"%s.%s()\",\"time\":%d}\n",
-                    app, klass.substring(performanceTargetPackageCropIndex), method, time);
-        }
-        if (traceRecord.getChildren() != null) {
-            for (TraceRecord child : traceRecord.getChildren()) {
-                printStatistics(child);
-            }
-        }
-    }
+//    public void printStatistics(TraceRecord traceRecord) {
+//        String klass = symbolRegistry.symbolName(traceRecord.getClassId());
+//        if (klass != null && klass.startsWith(performanceTargetPackage)) {
+//            String method = symbolRegistry.symbolName(traceRecord.getMethodId());
+//            long time = traceRecord.getTime() / 1000000l;
+//            writer.printf(
+//                    "{ \"app\":\"%s\", \"type\":\"perf\", \"method\": \"%s.%s()\",\"time\":%d}\n",
+//                    app, klass.substring(performanceTargetPackageCropIndex), method, time);
+//        }
+//        if (traceRecord.getChildren() != null) {
+//            for (TraceRecord child : traceRecord.getChildren()) {
+//                printStatistics(child);
+//            }
+//        }
+//    }
+    
 }

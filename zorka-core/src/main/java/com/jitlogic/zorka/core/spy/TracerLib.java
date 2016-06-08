@@ -453,10 +453,11 @@ public class TracerLib {
      */
     public ZorkaAsyncThread<SymbolicRecord> toTcp(String addr, int port, String hostname, int qlen,
             int packetSize, int retries, long retryTime, long retryTimeExp,
-            int timeout, int interval, String performanceTargetPackage) throws IOException {
+            int timeout, int interval, String performanceTargetPackage, int maxStringLength) throws
+            IOException {
         TcpTraceOutput output = new TcpTraceOutput(symbolRegistry, metricsRegistry, addr, port,
-                hostname, qlen, packetSize,
-                retries, retryTime, retryTimeExp, timeout, interval, performanceTargetPackage);
+                hostname, qlen, packetSize, retries, retryTime, retryTimeExp, timeout, interval,
+                performanceTargetPackage, maxStringLength);
         output.start();
         return output;
     }

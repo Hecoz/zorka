@@ -31,7 +31,8 @@ __jbossejb() {
         spy.get("ARGS", "INV", "arguments"),
         ejb._trace ? tracer.begin("EJB", zorka.longCfg("ejb.trace.time")) : null,
         ejb._trace ? tracer.attr("METHOD", "METHOD") : null,
-        ejb._trace ? tracer.attr("CLASS", "CLASS") : null)
+        ejb._trace ? tracer.attr("CLASS", "CLASS") : null,
+        ejb._trace ? tracer.attr("URI", "URI") : null)
       .onError(
         ejb._trace ? tracer.flags(tracer.SUBMIT_TRACE) : null,
         spy.fetchError("ERR"),
