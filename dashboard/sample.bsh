@@ -45,6 +45,16 @@ __sample() {
       return ((float)millis) / (1000.0*60.0*60.0);
     }
     
+    nagios.defcmd("GcCopy", nagios.jmxscan(
+      zorka.query("java", "java.lang:name=Copy,type=GarbageCollector").get("CollectionTime")
+        .metric(perfmon.timedDelta("LVAL1", "GC CPU time", "%CPU").divide(10))
+      ).withPerfLine("${LVAL0}"));
+
+    nagios.defcmd("GcParNew", nagios.jmxscan(
+      zorka.query("java", "java.lang:name=ParNew,type=GarbageCollector").get("CollectionTime")
+        .metric(perfmon.timedDelta("LVAL1", "GC CPU time", "%CPU").divide(10))
+      ).withPerfLine("${LVAL0}"));
+
     nagios.defcmd("GcScavenge", nagios.jmxscan(
       zorka.query("java", "java.lang:name=PS Scavenge,type=GarbageCollector").get("CollectionTime")
         .metric(perfmon.timedDelta("LVAL1", "GC CPU time", "%CPU").divide(10))
@@ -65,7 +75,12 @@ __sample() {
         .metric(perfmon.timedDelta("LVAL1", "GC CPU time", "%CPU").divide(10))
       ).withPerfLine("${LVAL0}"));
        
-    nagios.defcmd("GcG1", nagios.jmxscan(
+    nagios.defcmd("GcG1New", nagios.jmxscan(
+      zorka.query("java", "java.lang:name=G1 Young Generation,type=GarbageCollector").get("CollectionTime")
+        .metric(perfmon.timedDelta("LVAL1", "GC CPU time", "%CPU").divide(10))
+      ).withPerfLine("${LVAL0}"));
+
+    nagios.defcmd("GcG1Old", nagios.jmxscan(
       zorka.query("java", "java.lang:name=G1 Old Generation,type=GarbageCollector").get("CollectionTime")
         .metric(perfmon.timedDelta("LVAL1", "GC CPU time", "%CPU").divide(10))
       ).withPerfLine("${LVAL0}"));

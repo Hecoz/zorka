@@ -19,10 +19,10 @@
     }
   },
   {
-    "_id": "Hot-Spots",
+    "_id": "Transactions",
     "_type": "dashboard",
     "_source": {
-      "title": "Hot Spots",
+      "title": "Transactions",
       "hits": 0,
       "description": "",
       "panelsJSON": "[{\"col\":1,\"id\":\"Url-Hotspots\",\"panelIndex\":1,\"row\":1,\"size_x\":12,\"size_y\":3,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Method-Hotspots\",\"panelIndex\":2,\"row\":7,\"size_x\":12,\"size_y\":3,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Sql-Hotspots\",\"panelIndex\":3,\"row\":10,\"size_x\":12,\"size_y\":3,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Exception-Hotspots\",\"panelIndex\":5,\"row\":4,\"size_x\":12,\"size_y\":3,\"type\":\"visualization\"}]",
@@ -44,9 +44,9 @@
       "title": "Usage",
       "hits": 0,
       "description": "",
-      "panelsJSON": "[{\"col\":6,\"id\":\"Requests-slash-User\",\"panelIndex\":2,\"row\":1,\"size_x\":7,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Exceptions-slash-User\",\"panelIndex\":3,\"row\":5,\"size_x\":12,\"size_y\":3,\"type\":\"visualization\"},{\"id\":\"Http-Status\",\"type\":\"visualization\",\"panelIndex\":4,\"size_x\":5,\"size_y\":4,\"col\":1,\"row\":1}]",
+      "panelsJSON": "[{\"col\":6,\"id\":\"Requests-slash-User\",\"panelIndex\":2,\"row\":1,\"size_x\":7,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Exceptions-slash-User\",\"panelIndex\":3,\"row\":5,\"size_x\":12,\"size_y\":3,\"type\":\"visualization\"},{\"id\":\"Requests-slash-Users-Pie\",\"type\":\"visualization\",\"panelIndex\":4,\"size_x\":5,\"size_y\":4,\"col\":1,\"row\":1}]",
       "optionsJSON": "{\"darkTheme\":true}",
-      "uiStateJSON": "{\"P-4\":{\"vis\":{\"legendOpen\":true}}}",
+      "uiStateJSON": "{}",
       "version": 1,
       "timeRestore": true,
       "timeTo": "now",
@@ -57,11 +57,50 @@
     }
   },
   {
+    "_id": "Http-Statistics",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Http Statistics",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":6,\"id\":\"Http-Status\",\"panelIndex\":1,\"row\":1,\"size_x\":7,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Http-Status-Pie\",\"panelIndex\":2,\"row\":1,\"size_x\":5,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"columns\":[\"_source\"],\"id\":\"Http-Requests\",\"panelIndex\":3,\"row\":5,\"size_x\":12,\"size_y\":3,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{\"P-1\":{\"vis\":{\"legendOpen\":true}},\"P-2\":{\"vis\":{\"legendOpen\":true}}}",
+      "version": 1,
+      "timeRestore": true,
+      "timeTo": "now",
+      "timeFrom": "now-15m",
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "Http-Requests",
+    "_type": "search",
+    "_source": {
+      "title": "Http Requests",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "_source"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type=\\\"HTTP\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
     "_id": "Startup",
     "_type": "visualization",
     "_source": {
       "title": "Startup",
-      "visState": "{\"title\":\"Startups\",\"type\":\"table\",\"params\":{\"perPage\":1,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Pings\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"value.raw\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Timestamp\"}}],\"listeners\":{}}",
+      "visState": "{\"title\":\"Startup\",\"type\":\"table\",\"params\":{\"perPage\":1,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Pings\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"value.raw\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Timestamp\"}}],\"listeners\":{}}",
       "uiStateJSON": "{}",
       "description": "",
       "version": 1,
@@ -85,30 +124,58 @@
     }
   },
   {
-    "_id": "Uptime",
+    "_id": "Requests-slash-Users-Pie",
     "_type": "visualization",
     "_source": {
-      "title": "Uptime",
-      "visState": "{\"aggs\":[{\"id\":\"1\",\"params\":{\"customLabel\":\"Uptime (hours)\",\"field\":\"float1\"},\"schema\":\"metric\",\"type\":\"max\"}],\"listeners\":{},\"params\":{\"fontSize\":\"40\",\"handleNoResults\":true},\"title\":\"Uptime\",\"type\":\"metric\"}",
-      "uiStateJSON": "{}",
+      "title": "Requests/Users Pie",
+      "visState": "{\"aggs\":[{\"id\":\"1\",\"params\":{\"customLabel\":\"Users\"},\"schema\":\"metric\",\"type\":\"count\"},{\"id\":\"2\",\"params\":{\"customLabel\":\"Status\",\"field\":\"user.raw\",\"order\":\"desc\",\"orderBy\":\"_term\",\"size\":5},\"schema\":\"segment\",\"type\":\"terms\"}],\"listeners\":{},\"params\":{\"addLegend\":true,\"addTooltip\":true,\"isDonut\":false,\"shareYAxis\":true},\"title\":\"Users\",\"type\":\"pie\"}",
+      "uiStateJSON": "{\"vis\":{\"legendOpen\":true}}",
       "description": "",
       "version": 1,
       "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Uptime\\\" AND @timestamp:[now-239s TO now]\",\"analyze_wildcard\":true}},\"filter\":[]}"
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"type.raw=\\\"HTTP\\\"\"}},\"filter\":[]}"
       }
     }
   },
   {
-    "_id": "GC-Activity",
+    "_id": "Requests-slash-User",
     "_type": "visualization",
     "_source": {
-      "title": "GC Activity",
-      "visState": "{\"title\":\"GC Activity(%)\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":true,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":true,\"yAxis\":{\"max\":100,\"min\":0}},\"aggs\":[{\"id\":\"1\",\"type\":\"sum\",\"schema\":\"metric\",\"params\":{\"field\":\"int1\",\"customLabel\":\"GC Activity (%)\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"Timestamp\"}},{\"id\":\"3\",\"type\":\"filters\",\"schema\":\"group\",\"params\":{\"filters\":[{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"GC New Activity(%)\\\"\",\"analyze_wildcard\":true}}},\"label\":\"New\"},{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"GC Old Activity(%)\\\"\",\"analyze_wildcard\":true}}},\"label\":\"Old\"}]}}],\"listeners\":{}}",
+      "title": "Requests/User",
+      "visState": "{\"title\":\"Requests/User\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"user.raw\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"User\"}},{\"id\":\"3\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"@timestamp\",\"customLabel\":\"Last Request\"}},{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Count\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"HTTP\\\" AND _exists_:user\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Threads",
+    "_type": "visualization",
+    "_source": {
+      "title": "Threads",
+      "visState": "{\"title\":\"Threads\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":false,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"int1\",\"customLabel\":\"Threads\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"Timestamp\"}},{\"id\":\"3\",\"type\":\"filters\",\"schema\":\"group\",\"params\":{\"filters\":[{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Threads\\\"\",\"analyze_wildcard\":true}}},\"label\":\"Threads\"},{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Daemon Threads\\\"\",\"analyze_wildcard\":true}}},\"label\":\"Daemon Threads\"}]}}],\"listeners\":{}}",
       "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}",
       "description": "",
       "version": 1,
       "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"GC New Activity(%)\\\" OR type.raw=\\\"GC Old Activity(%)\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Threads\\\" OR type.raw=\\\"Daemon Threads\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Exceptions-slash-User",
+    "_type": "visualization",
+    "_source": {
+      "title": "Exceptions/User",
+      "visState": "{\"title\":\"Exceptions/User\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"5\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"@timestamp\",\"customLabel\":\"Last Occurrence\"}},{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Count\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"user.raw\",\"size\":25,\"order\":\"asc\",\"orderBy\":\"1\",\"customLabel\":\"User\"}},{\"id\":\"3\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"exception.raw\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Exception\"}},{\"id\":\"4\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"location.raw\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Location\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"HTTP\\\" AND _exists_:user\",\"analyze_wildcard\":true}},\"filter\":[]}"
       }
     }
   },
@@ -141,30 +208,30 @@
     }
   },
   {
-    "_id": "Threads",
+    "_id": "Uptime",
     "_type": "visualization",
     "_source": {
-      "title": "Threads",
-      "visState": "{\"title\":\"All Threads\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":false,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"int1\",\"customLabel\":\"Threads\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"Timestamp\"}},{\"id\":\"3\",\"type\":\"filters\",\"schema\":\"group\",\"params\":{\"filters\":[{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Threads\\\"\",\"analyze_wildcard\":true}}},\"label\":\"Threads\"},{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Daemon Threads\\\"\",\"analyze_wildcard\":true}}},\"label\":\"Daemon Threads\"}]}}],\"listeners\":{}}",
-      "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}",
-      "description": "",
-      "version": 1,
-      "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Threads\\\" OR type.raw=\\\"Daemon Threads\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
-      }
-    }
-  },
-  {
-    "_id": "Used-Heap-(%)",
-    "_type": "visualization",
-    "_source": {
-      "title": "Used Heap (%)",
-      "visState": "{\"title\":\"Used Heap (%)\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":false,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"float1\",\"customLabel\":\"Used Heap (%)\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"Timestamp\"}}],\"listeners\":{}}",
+      "title": "Uptime",
+      "visState": "{\"aggs\":[{\"id\":\"1\",\"params\":{\"customLabel\":\"Uptime (hours)\",\"field\":\"float1\"},\"schema\":\"metric\",\"type\":\"max\"}],\"listeners\":{},\"params\":{\"fontSize\":\"40\",\"handleNoResults\":true},\"title\":\"Uptime\",\"type\":\"metric\"}",
       "uiStateJSON": "{}",
       "description": "",
       "version": 1,
       "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw:\\\"Used Heap(%)\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"Uptime\\\" AND @timestamp:[now-239s TO now]\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "GC-Activity",
+    "_type": "visualization",
+    "_source": {
+      "title": "GC Activity",
+      "visState": "{\"title\":\"GC Activity\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":true,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":true,\"yAxis\":{\"max\":100,\"min\":0}},\"aggs\":[{\"id\":\"1\",\"type\":\"sum\",\"schema\":\"metric\",\"params\":{\"field\":\"int1\",\"customLabel\":\"GC Activity (%)\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"Timestamp\"}},{\"id\":\"3\",\"type\":\"filters\",\"schema\":\"group\",\"params\":{\"filters\":[{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"GC New Activity(%)\\\"\",\"analyze_wildcard\":true}}},\"label\":\"New\"},{\"input\":{\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"GC Old Activity(%)\\\"\",\"analyze_wildcard\":true}}},\"label\":\"Old\"}]}}],\"listeners\":{}}",
+      "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"GC New Activity(%)\\\" OR type.raw=\\\"GC Old Activity(%)\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
       }
     }
   },
@@ -183,20 +250,6 @@
     }
   },
   {
-    "_id": "Exceptions-slash-User",
-    "_type": "visualization",
-    "_source": {
-      "title": "Exceptions/User",
-      "visState": "{\"title\":\"Exceptions/User\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"5\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"@timestamp\",\"customLabel\":\"Last Occurrence\"}},{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Count\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"user.raw\",\"size\":25,\"order\":\"asc\",\"orderBy\":\"1\",\"customLabel\":\"User\"}},{\"id\":\"3\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"exception.raw\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Exception\"}},{\"id\":\"4\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"location.raw\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Location\"}}],\"listeners\":{}}",
-      "uiStateJSON": "{}",
-      "description": "",
-      "version": 1,
-      "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"HTTP\\\" AND _exists_:user\",\"analyze_wildcard\":true}},\"filter\":[]}"
-      }
-    }
-  },
-  {
     "_id": "Sql-Hits",
     "_type": "visualization",
     "_source": {
@@ -207,48 +260,6 @@
       "version": 1,
       "kibanaSavedObjectMeta": {
         "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"SQL\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
-      }
-    }
-  },
-  {
-    "_id": "Method-Hotspots",
-    "_type": "visualization",
-    "_source": {
-      "title": "Method Hotspots",
-      "visState": "{\"title\":\"Method Hotspots\",\"type\":\"table\",\"params\":{\"perPage\":5,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"avg\",\"schema\":\"metric\",\"params\":{\"field\":\"time\",\"customLabel\":\"Average Time (ms)\"}},{\"id\":\"4\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"@timestamp\",\"customLabel\":\"Last Execution\"}},{\"id\":\"3\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"5\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"class.raw\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Class\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"method.raw\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Method\"}}],\"listeners\":{}}",
-      "uiStateJSON": "{}",
-      "description": "",
-      "version": 1,
-      "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type=\\\"EJB\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
-      }
-    }
-  },
-  {
-    "_id": "Requests-slash-User",
-    "_type": "visualization",
-    "_source": {
-      "title": "Requests/User",
-      "visState": "{\"title\":\"Requests/User\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"user.raw\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"User\"}},{\"id\":\"3\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"@timestamp\",\"customLabel\":\"Last Request\"}},{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Count\"}}],\"listeners\":{}}",
-      "uiStateJSON": "{}",
-      "description": "",
-      "version": 1,
-      "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"HTTP\\\" AND _exists_:user\",\"analyze_wildcard\":true}},\"filter\":[]}"
-      }
-    }
-  },
-  {
-    "_id": "Http-Status",
-    "_type": "visualization",
-    "_source": {
-      "title": "Http Status",
-      "visState": "{\"title\":\"Http Status\",\"type\":\"pie\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"isDonut\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Http Status\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"status.raw\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Status\"}}],\"listeners\":{}}",
-      "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}",
-      "description": "",
-      "version": 1,
-      "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"HTTP\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
       }
     }
   },
@@ -267,11 +278,53 @@
     }
   },
   {
+    "_id": "Method-Hotspots",
+    "_type": "visualization",
+    "_source": {
+      "title": "Method Hotspots",
+      "visState": "{\"title\":\"Method Hotspots\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"avg\",\"schema\":\"metric\",\"params\":{\"field\":\"time\",\"customLabel\":\"Average Time (ms)\"}},{\"id\":\"4\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"@timestamp\",\"customLabel\":\"Last Execution\"}},{\"id\":\"3\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"5\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"class.raw\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Class\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"method.raw\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Method\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type=\\\"METHOD\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
     "_id": "Url-Hotspots",
     "_type": "visualization",
     "_source": {
       "title": "Url Hotspots",
       "visState": "{\"title\":\"Url Hotspots\",\"type\":\"table\",\"params\":{\"perPage\":5,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"avg\",\"schema\":\"metric\",\"params\":{\"field\":\"time\",\"customLabel\":\"Average Time (ms)\"}},{\"id\":\"4\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"@timestamp\",\"customLabel\":\"Last Execution\"}},{\"id\":\"3\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Count\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"uri.raw\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Url\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type=\\\"HTTP\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Http-Status-Pie",
+    "_type": "visualization",
+    "_source": {
+      "title": "Http Status Pie",
+      "visState": "{\"title\":\"Http Status\",\"type\":\"pie\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"isDonut\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Http Status\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"status.raw\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Status\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"query_string\":{\"query\":\"type.raw=\\\"HTTP\\\"\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Http-Status",
+    "_type": "visualization",
+    "_source": {
+      "title": "Http Status",
+      "visState": "{\"title\":\"Http Status\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"uri.raw\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Url\"}},{\"id\":\"3\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"status.raw\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Status\"}}],\"listeners\":{}}",
       "uiStateJSON": "{}",
       "description": "",
       "version": 1,
